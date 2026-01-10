@@ -1,0 +1,15 @@
+# Dokumentation (wird nicht mit ins Repository genommen)
+docs/
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log

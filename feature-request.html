@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mittwald Feature Request - Voice & Text Eingabe</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #555;
+            font-size: 1.1em;
+        }
+
+        .form-group label .required {
+            color: #e74c3c;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .voice-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            align-items: center;
+        }
+
+        .voice-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .voice-btn.record {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .voice-btn.record:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .voice-btn.record.recording {
+            background: #27ae60;
+            animation: pulse 1.5s infinite;
+        }
+
+        .voice-btn.stop {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .voice-btn.stop:hover {
+            background: #7f8c8d;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-indicator.idle {
+            background: #95a5a6;
+        }
+
+        .status-indicator.recording {
+            background: #e74c3c;
+            animation: pulse 1s infinite;
+        }
+
+        .status-indicator.processing {
+            background: #f39c12;
+            animation: pulse 1s infinite;
+        }
+
+        .help-text {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .example-text {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #555;
+            border-left: 4px solid #667eea;
+        }
+
+        .example-text strong {
+            color: #667eea;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .btn.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn.secondary {
+            background: #ecf0f1;
+            color: #555;
+        }
+
+        .btn.secondary:hover {
+            background: #d5dbdb;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 20px 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        .notification.show {
+            display: block;
+        }
+
+        .notification.success {
+            border-left: 4px solid #27ae60;
+        }
+
+        .notification.error {
+            border-left: 4px solid #e74c3c;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .voice-status {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-left: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        .speech-info {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #2c3e50;
+        }
+
+        .api-key-info {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 8px;
+            font-size: 0.85em;
+        }
+
+        .api-key-info a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .api-key-info a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 mittwald Feature Request</h1>
+            <p>Teile deine Ideen per Sprache oder Text mit - Powered by mittwald Whisper</p>
+        </div>
+
+        <div class="content">
+            <div class="form-group" style="margin-bottom: 30px; padding: 25px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 12px; border-left: 5px solid #667eea; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <label for="apiKey" style="font-size: 1.2em; margin-bottom: 15px; display: block;">
+                    🔑 mittwald AI API-Key <span class="required">*</span>
+                </label>
+                <div style="position: relative; display: flex; gap: 10px; align-items: center;">
+                    <input type="password" id="apiKey" name="apiKey" required 
+                           placeholder="Dein mittwald AI-Hosting API-Key hier eingeben..."
+                           style="flex: 1; padding: 15px; border: 2px solid #667eea; border-radius: 8px; font-size: 1em; font-family: 'Courier New', monospace;">
+                    <button type="button" id="toggleApiKey" 
+                            style="padding: 15px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1em; font-weight: 600; white-space: nowrap;"
+                            title="API-Key anzeigen/verstecken">
+                        👁️
+                    </button>
+                </div>
+                <div class="api-key-info" style="margin-top: 12px;">
+                    🔒 <strong>Sicherheit:</strong> Dein API-Key wird nur lokal in deinem Browser gespeichert (localStorage) und niemals an Dritte weitergegeben. 
+                    <br>
+                    📖 <strong>API-Key erhalten:</strong> <a href="https://developer.mittwald.de/de/docs/v2/platform/aihosting/access-and-usage/" target="_blank">Anleitung zum Erstellen eines API-Keys im mStudio</a>
+                </div>
+            </div>
+
+            <form id="featureForm">
+                <div class="form-group" id="voiceInputGroup">
+                    <label for="voiceInput" style="font-size: 1.3em;">
+                        🎤 Sage mir alles zu deinem Feature-Request <span class="required">*</span>
+                    </label>
+                    <div class="input-wrapper">
+                        <textarea id="voiceInput" name="voiceInput" required 
+                                  placeholder="Sprich alles in einer Nachricht: Titel, Problem, Lösungsideen, zusätzliche Infos... Oder tippe hier dein Feature-Request...&#10;&#10;Beispiel: &quot;Ich möchte, dass die Projektsuche auch nach Domains funktioniert. Als Entwickler muss ich immer durch alle Projekte klicken, um eine spezifische Domain zu finden. Die Lösung könnte sein, dass die Projektsuche auch Domain-Suche unterstützt.&quot;"
+                                  style="min-height: 250px;"></textarea>
+                        <div class="voice-controls">
+                            <button type="button" class="voice-btn record" id="recordVoice" data-target="voiceInput">
+                                <span class="status-indicator idle" id="voiceStatus"></span>
+                                <span>🎤 Sprachaufnahme</span>
+                            </button>
+                            <button type="button" class="btn secondary" id="clearVoiceBtn" 
+                                    style="padding: 12px 20px; font-size: 0.9em; background: #e74c3c; color: white; border: none; border-radius: 25px; cursor: pointer; font-weight: 600;"
+                                    title="Feld leeren">
+                                🗑️ Feld leeren
+                            </button>
+                            <span class="voice-status" id="voiceStatusText">Bereit</span>
+                        </div>
+                    </div>
+                    <div class="example-text">
+                        <strong>💡 Tipp:</strong> Sage einfach alles in einer Sprachnachricht! Die AI erstellt automatisch:
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li><strong>Titel</strong> - Kurze Zusammenfassung</li>
+                            <li><strong>Problem</strong> - Was möchtest du lösen? Wann tritt es auf?</li>
+                            <li><strong>Lösung</strong> - Deine Lösungsideen</li>
+                            <li><strong>Zusätzliche Infos</strong> - Screenshots, Links, etc.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Structured fields that will be auto-filled by AI -->
+                <div id="structuredFields" style="display: none; margin-top: 30px; padding-top: 30px; border-top: 2px solid #e0e0e0;">
+                    <div style="padding: 20px; background: #e8f5e9; border-radius: 10px; margin-bottom: 30px; border-left: 4px solid #4caf50;">
+                        <h3 style="margin: 0 0 10px 0; color: #2e7d32;">✅ Felder automatisch erkannt!</h3>
+                        <p style="margin: 0; color: #555;">Die folgenden Felder wurden aus deiner Sprachnachricht extrahiert. Du kannst sie bearbeiten oder direkt absenden.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="title">
+                            Titel <span class="required">*</span>
+                        </label>
+                        <input type="text" id="title" name="title" readonly 
+                               style="background: #f8f9fa; cursor: not-allowed; border: 2px solid #e0e0e0;">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="problem">
+                            Problem <span class="required">*</span>
+                        </label>
+                        <textarea id="problem" name="problem" readonly 
+                                  style="background: #f8f9fa; cursor: not-allowed; min-height: 120px; border: 2px solid #e0e0e0;"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="solution">Lösungsideen</label>
+                        <textarea id="solution" name="solution" readonly 
+                                  style="background: #f8f9fa; cursor: not-allowed; min-height: 120px; border: 2px solid #e0e0e0;"></textarea>
+                        <div class="help-text" style="margin-top: 5px;">Optional - kann leer bleiben</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="additional">Zusätzliche Informationen</label>
+                        <textarea id="additional" name="additional" readonly 
+                                  style="background: #f8f9fa; cursor: not-allowed; min-height: 100px; border: 2px solid #e0e0e0;"></textarea>
+                        <div class="help-text" style="margin-top: 5px;">Optional - kann leer bleiben</div>
+                    </div>
+
+                    <div style="padding: 15px; background: #fff3cd; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #ffc107;">
+                        <strong>💡 Tipp:</strong> Klicke auf "✏️ Felder bearbeiten" um die Vorschläge anzupassen.
+                        <button type="button" id="editFields" style="margin-left: 10px; padding: 8px 20px; background: #ffc107; color: #333; border: none; border-radius: 5px; cursor: pointer; font-weight: 600;">
+                            ✏️ Felder bearbeiten
+                        </button>
+                    </div>
+                </div>
+
+                <div class="actions" id="mainActions">
+                    <button type="button" class="btn primary" id="extractBtn" style="background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);">
+                        🤖 Felder mit AI extrahieren
+                    </button>
+                    <button type="reset" class="btn secondary">
+                        🔄 Zurücksetzen
+                    </button>
+                </div>
+
+                <!-- Submit actions (shown after extraction) -->
+                <div class="actions" id="submitActions" style="display: none; margin-top: 20px;">
+                    <button type="submit" class="btn primary" id="submitBtn">
+                        📝 Auf GitHub öffnen
+                    </button>
+                    <button type="button" class="btn secondary" id="copyBtn">
+                        📋 In Zwischenablage kopieren
+                    </button>
+                    <button type="button" class="btn secondary" id="backBtn">
+                        ← Zurück bearbeiten
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // Audio Recording Setup mit mittwald Whisper API
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let currentRecording = null;
+        let currentTarget = null;
+        let stream = null;
+
+        // mittwald AI-Hosting API Configuration
+        const WHISPER_API_URL = 'https://llm.aihosting.mittwald.de/v1/audio/transcriptions';
+        const WHISPER_MODEL = 'whisper-large-v3-turbo'; // Model name must be lowercase
+        const CHAT_API_URL = 'https://llm.aihosting.mittwald.de/v1/chat/completions';
+        const CHAT_MODEL = 'Mistral-Small-3.2-24B-Instruct'; // For structuring the feature request (exact case from API)
+
+        // Load API Key from localStorage
+        const apiKeyInput = document.getElementById('apiKey');
+        const savedApiKey = localStorage.getItem('mittwald_ai_api_key');
+        if (savedApiKey) {
+            apiKeyInput.value = savedApiKey;
+        }
+
+        // Save API Key to localStorage
+        apiKeyInput.addEventListener('input', function() {
+            if (this.value.trim()) {
+                localStorage.setItem('mittwald_ai_api_key', this.value.trim());
+            } else {
+                localStorage.removeItem('mittwald_ai_api_key');
+            }
+            validateForm();
+        });
+
+        // Toggle API Key visibility
+        const toggleApiKeyBtn = document.getElementById('toggleApiKey');
+        toggleApiKeyBtn.addEventListener('click', function() {
+            const type = apiKeyInput.type === 'password' ? 'text' : 'password';
+            apiKeyInput.type = type;
+            this.textContent = type === 'password' ? '👁️' : '🙈';
+        });
+
+        // Voice recording button
+        const recordVoiceBtn = document.getElementById('recordVoice');
+        if (recordVoiceBtn) {
+            recordVoiceBtn.addEventListener('click', function() {
+                toggleRecording('voiceInput');
+            });
+        }
+
+        // Clear voice input button
+        const clearVoiceBtn = document.getElementById('clearVoiceBtn');
+        if (clearVoiceBtn) {
+            clearVoiceBtn.addEventListener('click', function() {
+                const voiceInputElement = document.getElementById('voiceInput');
+                if (voiceInputElement) {
+                    voiceInputElement.value = '';
+                    voiceInputElement.dispatchEvent(new Event('input'));
+                    audioChunks = []; // Also clear chunks
+                    currentRecording = null;
+                    currentTarget = null;
+                    updateStatus('voiceInput', 'idle', 'Bereit');
+                    showNotification('Feld geleert', 'success');
+                }
+            });
+        }
+
+        // Extract structured data button
+        const extractBtn = document.getElementById('extractBtn');
+        if (extractBtn) {
+            extractBtn.addEventListener('click', async function() {
+                const voiceInputElement = document.getElementById('voiceInput');
+                if (voiceInputElement && voiceInputElement.value.trim()) {
+                    await extractStructuredData(voiceInputElement.value);
+                } else {
+                    showNotification('Bitte gib zuerst deinen Feature-Request ein (per Voice oder Text)', 'error');
+                }
+            });
+        }
+
+        // Edit fields button
+        const editFieldsBtn = document.getElementById('editFields');
+        if (editFieldsBtn) {
+            editFieldsBtn.addEventListener('click', function() {
+                const fields = document.querySelectorAll('#structuredFields input, #structuredFields textarea');
+                let wasReadOnly = false;
+                
+                fields.forEach(field => {
+                    if (field.readOnly) {
+                        wasReadOnly = true;
+                        field.readOnly = false;
+                        field.style.background = 'white';
+                        field.style.borderColor = '#667eea';
+                        field.style.cursor = 'text';
+                        field.required = field.id === 'title' || field.id === 'problem';
+                    } else {
+                        // Toggle back to read-only
+                        field.readOnly = true;
+                        field.style.background = '#f8f9fa';
+                        field.style.borderColor = '#e0e0e0';
+                        field.style.cursor = 'not-allowed';
+                    }
+                });
+                
+                // Update button text
+                if (wasReadOnly) {
+                    this.textContent = '🔒 Felder sperren';
+                    showNotification('Felder sind jetzt editierbar', 'success');
+                } else {
+                    this.textContent = '✏️ Felder bearbeiten';
+                    showNotification('Felder sind jetzt schreibgeschützt', 'success');
+                }
+                
+                // Trigger validation
+                validateForm();
+            });
+        }
+
+        // Back button
+        const backBtn = document.getElementById('backBtn');
+        if (backBtn) {
+            backBtn.addEventListener('click', function() {
+                const structuredFields = document.getElementById('structuredFields');
+                const mainActions = document.getElementById('mainActions');
+                const submitActions = document.getElementById('submitActions');
+                const voiceInputGroup = document.getElementById('voiceInputGroup');
+                
+                if (structuredFields) {
+                    structuredFields.style.display = 'none';
+                }
+                if (mainActions) {
+                    mainActions.style.display = 'flex';
+                }
+                if (submitActions) {
+                    submitActions.style.display = 'none';
+                }
+                
+                // Show the voice input field again
+                if (voiceInputGroup) {
+                    voiceInputGroup.style.display = 'block';
+                }
+                
+                document.getElementById('voiceInput').focus();
+                showNotification('Zurück zum Hauptfeld', 'success');
+            });
+        }
+
+        async function toggleRecording(targetId) {
+            const apiKey = apiKeyInput.value.trim();
+            if (!apiKey) {
+                showNotification('Bitte gib zuerst deinen mittwald AI API-Key ein', 'error');
+                apiKeyInput.focus();
+                return;
+            }
+
+            if (currentRecording === targetId) {
+                // Stop recording
+                console.log('Stopping recording for', targetId);
+                stopRecording();
+            } else {
+                // Start recording - IMPORTANT: Clear any existing chunks first
+                console.log('Starting new recording for', targetId);
+                console.log('Previous recording state - currentRecording:', currentRecording, 'audioChunks:', audioChunks.length);
+                
+                // Clear chunks before starting new recording
+                audioChunks = [];
+                
+                if (currentRecording) {
+                    console.log('⚠️ Another recording was active, stopping it first');
+                    stopRecording();
+                    // Wait a bit before starting new recording to ensure cleanup
+                    setTimeout(() => {
+                        audioChunks = []; // Clear again after stop
+                        startRecording(targetId);
+                    }, 500);
+                } else {
+                    // Ensure chunks are empty
+                    audioChunks = [];
+                    startRecording(targetId);
+                }
+            }
+        }
+
+        async function startRecording(targetId) {
+            try {
+                // Stop any existing recording first
+                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                    mediaRecorder.stop();
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+                
+                // Clear any existing stream
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                    stream = null;
+                }
+                
+                // Reset audio chunks completely
+                audioChunks = [];
+                console.log('Starting new recording - audio chunks reset');
+                
+                stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream, {
+                    mimeType: 'audio/webm;codecs=opus'
+                });
+                currentTarget = targetId;
+                currentRecording = targetId;
+
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data && event.data.size > 0) {
+                        // Only add chunks if we're still recording the same target
+                        if (currentRecording === targetId && currentTarget === targetId) {
+                            audioChunks.push(event.data);
+                            console.log('✓ Audio chunk added. Total chunks:', audioChunks.length, 'Size:', event.data.size);
+                        } else {
+                            console.log('⚠️ Ignoring chunk - recording target changed from', targetId, 'to', currentTarget);
+                        }
+                    }
+                };
+
+                mediaRecorder.onstop = async () => {
+                    // Wait a bit to ensure all chunks are collected
+                    const savedTarget = targetId;
+                    const savedChunks = [...audioChunks]; // Make a copy immediately
+                    
+                    setTimeout(async () => {
+                        // Only process if we still have the correct target and chunks
+                        if (currentTarget === savedTarget && savedChunks.length > 0) {
+                            console.log('✓ Processing audio for target:', savedTarget, 'with', savedChunks.length, 'chunks');
+                            // Temporarily restore chunks for processing
+                            const originalChunks = audioChunks;
+                            audioChunks = savedChunks;
+                            await processAudio();
+                            // Ensure chunks are cleared after processing
+                            audioChunks = [];
+                        } else {
+                            console.log('⚠️ Stopping processing - target changed from', savedTarget, 'to', currentTarget, 'or no chunks');
+                            audioChunks = []; // Clear chunks if target changed
+                        }
+                    }, 300);
+                };
+
+                mediaRecorder.start();
+                updateStatus(targetId, 'recording', 'Aufnahme läuft...');
+                showNotification('Aufnahme gestartet - sprich jetzt', 'success');
+            } catch (error) {
+                console.error('Error accessing microphone:', error);
+                showNotification('Fehler beim Zugriff auf das Mikrofon: ' + error.message, 'error');
+                updateStatus(targetId, 'idle', 'Fehler');
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+            }
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            if (currentTarget) {
+                updateStatus(currentTarget, 'processing', 'Verarbeitung...');
+            }
+        }
+
+        async function processAudio() {
+            // Make a local copy of chunks and target IMMEDIATELY to avoid race conditions
+            const chunksToProcess = audioChunks.length > 0 ? [...audioChunks] : [];
+            const targetToProcess = currentTarget;
+            
+            console.log('=== processAudio called ===');
+            console.log('Processing', chunksToProcess.length, 'chunks for target:', targetToProcess);
+            console.log('Current recording state:', currentRecording);
+            
+            // Clear chunks immediately to prevent reuse in case of rapid re-recording
+            audioChunks = [];
+            
+            if (!targetToProcess) {
+                console.log('⚠️ No target specified, aborting');
+                showNotification('Kein Ziel-Feld gefunden', 'error');
+                return;
+            }
+            
+            if (chunksToProcess.length === 0) {
+                console.log('⚠️ No audio chunks to process');
+                showNotification('Keine Audio-Daten aufgenommen', 'error');
+                updateStatus(targetToProcess, 'idle', 'Keine Daten');
+                currentRecording = null;
+                currentTarget = null;
+                return;
+            }
+
+            const apiKey = apiKeyInput.value.trim();
+            if (!apiKey) {
+                showNotification('API-Key fehlt', 'error');
+                updateStatus(targetToProcess, 'idle', 'Fehler');
+                currentRecording = null;
+                currentTarget = null;
+                return;
+            }
+
+            try {
+                // Create audio blob from chunks (using local copy)
+                const mimeType = mediaRecorder?.mimeType || 'audio/webm';
+                const audioBlob = new Blob(chunksToProcess, { type: mimeType });
+                
+                console.log('Audio blob created from', chunksToProcess.length, 'chunks:', {
+                    size: audioBlob.size,
+                    type: audioBlob.type,
+                    target: targetToProcess
+                });
+                
+                // Convert to WAV format (Whisper API supported format)
+                const wavBlob = await convertToWav(audioBlob);
+                
+                // Check file size (max 25 MB)
+                if (wavBlob.size > 25 * 1024 * 1024) {
+                    showNotification('Audio-Datei ist zu groß (max. 25 MB)', 'error');
+                    updateStatus(currentTarget, 'idle', 'Zu groß');
+                    currentRecording = null;
+                    currentTarget = null;
+                    return;
+                }
+
+                // Create form data
+                const formData = new FormData();
+                const fileName = wavBlob.type === 'audio/wav' ? 'recording.wav' : 'recording.webm';
+                formData.append('file', wavBlob, fileName);
+                formData.append('model', WHISPER_MODEL);
+                formData.append('language', 'de');
+                formData.append('temperature', '1.0');
+                formData.append('response_format', 'json');
+
+                // Send to Whisper API
+                const response = await fetch(WHISPER_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ error: { message: response.statusText } }));
+                    throw new Error(errorData.error?.message || `HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                const transcript = result.text || result.transcript || '';
+
+                console.log('Whisper transcript:', transcript);
+                console.log('Transcript length:', transcript.length);
+
+                if (transcript) {
+                    // Set transcript to voiceInput field - APPEND to existing content
+                    const voiceInputElement = document.getElementById('voiceInput');
+                    if (voiceInputElement) {
+                        const newTranscript = transcript.trim();
+                        
+                        // Verify we're still processing for voiceInput (currentTarget should be 'voiceInput')
+                        if (targetToProcess !== 'voiceInput' || !currentTarget) {
+                            console.log('⚠️ Target changed during processing or invalid target. Expected:', targetToProcess, 'Current:', currentTarget);
+                            // Still process, but log warning
+                        }
+                        
+                        // Wenn bereits Text vorhanden ist, füge einen Leerzeichen hinzu (APPEND Mode)
+                        const currentValue = voiceInputElement.value.trim();
+                        
+                        // Check if this is a duplicate (same transcript as before)
+                        if (currentValue && currentValue.endsWith(newTranscript)) {
+                            console.log('⚠️ Duplicate transcript detected, skipping append');
+                            updateStatus('voiceInput', 'idle', 'Duplikat erkannt');
+                            showNotification('Transkription erkannt, aber Text scheint bereits vorhanden zu sein', 'error');
+                            return;
+                        }
+                        
+                        // Append new transcript
+                        if (currentValue) {
+                            voiceInputElement.value = currentValue + ' ' + newTranscript;
+                        } else {
+                            voiceInputElement.value = newTranscript;
+                        }
+                        
+                        // Get the complete text for extraction
+                        const completeText = voiceInputElement.value.trim();
+                        
+                        console.log('=== Whisper Transkription erfolgreich ===');
+                        console.log('New transcript (length:', newTranscript.length, '):', newTranscript);
+                        console.log('Previous text length:', currentValue.length);
+                        console.log('Complete text after append (length:', completeText.length, ')');
+                        console.log('First 300 chars:', completeText.substring(0, 300));
+                        if (completeText.length > 300) {
+                            console.log('Last 300 chars:', completeText.substring(completeText.length - 300));
+                        }
+                        
+                        // Clear audio chunks after successful processing (should already be empty, but ensure it)
+                        audioChunks = [];
+                        
+                        // Reset recording state
+                        currentRecording = null;
+                        // Keep currentTarget for now until extraction is complete
+                        
+                        // Trigger input event for validation
+                        voiceInputElement.dispatchEvent(new Event('input'));
+                        
+                        // Automatically extract structured data using AI - use the complete text
+                        console.log('=== Sending complete text to Mistral for extraction ===');
+                        console.log('Text length:', completeText.length, 'characters');
+                        updateStatus('voiceInput', 'processing', 'Extrahiere Felder...');
+                        showNotification('Transkription erfolgreich! Extrahiere jetzt die Felder...', 'success');
+                        await extractStructuredData(completeText);
+                        
+                        // Clear target after successful extraction
+                        currentTarget = null;
+                    }
+                } else {
+                    showNotification('Kein Text erkannt. Versuche es erneut.', 'error');
+                    updateStatus('voiceInput', 'idle', 'Kein Text');
+                    audioChunks = []; // Clear chunks on error too
+                    currentRecording = null;
+                    currentTarget = null;
+                }
+
+            } catch (error) {
+                console.error('Error processing audio:', error);
+                let errorMessage = error.message;
+                
+                // Check for CORS or network errors
+                if (error.message.includes('Failed to fetch') || error.message.includes('ERR_NAME_NOT_RESOLVED') || error.message.includes('NetworkError')) {
+                    errorMessage = 'Netzwerkfehler: Die API konnte nicht erreicht werden. ' +
+                                  'Mögliche Ursachen: CORS-Problem, falsche URL, oder Netzwerkverbindung. ' +
+                                  'Bitte prüfe die API-URL und stelle sicher, dass die mittwald API CORS für diese Domain erlaubt.';
+                } else if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+                    errorMessage = 'Authentifizierungsfehler: Der API-Key ist ungültig oder wurde nicht korrekt übermittelt. Bitte prüfe deinen API-Key.';
+                } else if (error.message.includes('403') || error.message.includes('Forbidden')) {
+                    errorMessage = 'Zugriff verweigert: Dein API-Key hat keine Berechtigung für diese Anfrage.';
+                } else if (error.message.includes('429') || error.message.includes('Too Many Requests')) {
+                    errorMessage = 'Rate Limit erreicht: Bitte warte einen Moment und versuche es erneut.';
+                }
+                
+                showNotification('Fehler bei der Transkription: ' + errorMessage, 'error');
+                updateStatus('voiceInput', 'idle', 'Fehler');
+            } finally {
+                // Always reset state after processing
+                currentRecording = null;
+                currentTarget = null;
+                audioChunks = [];
+                console.log('Audio processing finished, state cleared');
+            }
+        }
+
+        async function convertToWav(audioBlob) {
+            try {
+                // Try to use AudioContext for conversion
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const arrayBuffer = await audioBlob.arrayBuffer();
+                const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+                
+                // Convert to WAV
+                const wav = audioBufferToWav(audioBuffer);
+                return new Blob([wav], { type: 'audio/wav' });
+            } catch (error) {
+                console.warn('Error converting to WAV, trying to use original format:', error);
+                // Fallback: Try to send as webm (if API supports it) or use audio/webm format
+                // If webm doesn't work, we'll get an error from the API
+                return audioBlob;
+            }
+        }
+
+        function audioBufferToWav(buffer) {
+            const length = buffer.length;
+            const numberOfChannels = buffer.numberOfChannels;
+            const sampleRate = buffer.sampleRate;
+            const bytesPerSample = 2;
+            const blockAlign = numberOfChannels * bytesPerSample;
+            const byteRate = sampleRate * blockAlign;
+            const dataSize = length * blockAlign;
+            const bufferSize = 44 + dataSize;
+            const arrayBuffer = new ArrayBuffer(bufferSize);
+            const view = new DataView(arrayBuffer);
+
+            // WAV header
+            const writeString = (offset, string) => {
+                for (let i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i));
+                }
+            };
+
+            writeString(0, 'RIFF');
+            view.setUint32(4, bufferSize - 8, true);
+            writeString(8, 'WAVE');
+            writeString(12, 'fmt ');
+            view.setUint32(16, 16, true); // fmt chunk size
+            view.setUint16(20, 1, true); // audio format (PCM)
+            view.setUint16(22, numberOfChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, byteRate, true);
+            view.setUint16(32, blockAlign, true);
+            view.setUint16(34, bytesPerSample * 8, true);
+            writeString(36, 'data');
+            view.setUint32(40, dataSize, true);
+
+            // Convert audio data
+            let offset = 44;
+            for (let i = 0; i < length; i++) {
+                for (let channel = 0; channel < numberOfChannels; channel++) {
+                    const sample = Math.max(-1, Math.min(1, buffer.getChannelData(channel)[i]));
+                    view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+                    offset += 2;
+                }
+            }
+
+            return arrayBuffer;
+        }
+
+        async function extractStructuredData(text) {
+            const apiKey = apiKeyInput.value.trim();
+            if (!apiKey) {
+                showNotification('API-Key fehlt', 'error');
+                return;
+            }
+
+            if (!text || !text.trim()) {
+                showNotification('Bitte gib zuerst einen Feature-Request ein', 'error');
+                return;
+            }
+
+            try {
+                // Reset structured fields before new extraction
+                console.log('=== Resetting structured fields before extraction ===');
+                const titleFieldReset = document.getElementById('title');
+                const problemFieldReset = document.getElementById('problem');
+                const solutionFieldReset = document.getElementById('solution');
+                const additionalFieldReset = document.getElementById('additional');
+                
+                if (titleFieldReset) titleFieldReset.value = '';
+                if (problemFieldReset) problemFieldReset.value = '';
+                if (solutionFieldReset) solutionFieldReset.value = '';
+                if (additionalFieldReset) additionalFieldReset.value = '';
+                
+                // Hide structured fields during extraction
+                document.getElementById('structuredFields').style.display = 'none';
+                
+                updateStatus('voiceInput', 'processing', 'Extrahiere Felder mit AI...');
+                showNotification('Extrahiere strukturierte Daten mit AI...', 'success');
+
+                console.log('=== extractStructuredData called ===');
+                console.log('Text received length:', text.length, 'characters');
+                console.log('Full text:', text);
+                console.log('Text preview (first 500 chars):', text.substring(0, 500));
+                if (text.length > 500) {
+                    console.log('Text preview (last 500 chars):', text.substring(text.length - 500));
+                }
+
+                const prompt = `Analysiere den folgenden Feature-Request SORGFÄLTIG und VOLLSTÄNDIG. Verwende den KOMPLETTEN Text - lass NICHTS aus.
+
+Extrahierte Informationen müssen den folgenden JSON-Struktur entsprechen:
+- "title": Kurzer, prägnanter Titel (max. 100 Zeichen) basierend auf dem Hauptinhalt
+- "problem": VOLLSTÄNDIGE Beschreibung des Problems. Was soll gelöst werden? Wann tritt es auf? Wer ist betroffen? Beschreibe ALLES was zum Problem erwähnt wird.
+- "solution": ALLE Lösungsideen, Vorschläge oder Ideen die erwähnt werden. Wenn keine Lösungsideen erwähnt werden, verwende "".
+- "additional": ALLE zusätzlichen Informationen wie Screenshots, Links, technische Details, Beispiele, etc. Wenn nichts Zusätzliches erwähnt wird, verwende "".
+
+WICHTIG: Der folgende Text ist KOMPLETT - verwende ALLE Informationen:
+"""
+${text}
+"""
+
+Analysiere den Text gründlich und extrahiere ALLE Informationen ohne etwas auszulassen. Antworte NUR mit einem gültigen JSON-Objekt im Format:
+{"title": "...", "problem": "...", "solution": "...", "additional": "..."}`;
+
+                console.log('=== Sending to Mistral API ===');
+                console.log('Prompt length:', prompt.length);
+                console.log('Text in prompt length:', text.length);
+                console.log('Prompt preview (first 1000 chars):', prompt.substring(0, 1000));
+
+                const requestBody = {
+                    model: CHAT_MODEL,
+                    messages: [
+                        {
+                            role: 'system',
+                            content: 'Du bist ein Assistent, der Feature-Requests analysiert und strukturierte Daten extrahiert. Analysiere den KOMPLETTEN Text sorgfältig und extrahiere ALLE Informationen. Nichts auslassen. Antworte IMMER NUR mit einem gültigen JSON-Objekt im folgenden Format: {"title": "...", "problem": "...", "solution": "...", "additional": "..."}. Verwende den vollständigen Text für die Extraktion. Keine zusätzlichen Erklärungen, nur JSON.'
+                        },
+                        {
+                            role: 'user',
+                            content: prompt
+                        }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 2000 // Genug Platz für vollständige Extraktion
+                };
+
+                console.log('Request body:', JSON.stringify(requestBody, null, 2).substring(0, 2000));
+
+                const response = await fetch(CHAT_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ error: { message: response.statusText } }));
+                    throw new Error(errorData.error?.message || `HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                const content = result.choices?.[0]?.message?.content || '';
+                
+                console.log('=== Mistral Response ===');
+                console.log('Response content length:', content.length);
+                console.log('Response content:', content);
+                
+                // Parse JSON response
+                let structuredData;
+                try {
+                    // Try to extract JSON from markdown code blocks if present
+                    let jsonString = content.trim();
+                    
+                    // Remove markdown code blocks if present
+                    if (jsonString.includes('```')) {
+                        const jsonMatch = jsonString.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
+                        if (jsonMatch && jsonMatch[1]) {
+                            jsonString = jsonMatch[1];
+                        }
+                    }
+                    
+                    // If still not starting with {, try to find JSON object
+                    if (!jsonString.startsWith('{')) {
+                        const jsonMatch = jsonString.match(/(\{[\s\S]*\})/);
+                        if (jsonMatch && jsonMatch[1]) {
+                            jsonString = jsonMatch[1];
+                        }
+                    }
+                    
+                    console.log('Parsing JSON string:', jsonString.substring(0, 500));
+                    structuredData = JSON.parse(jsonString);
+                    console.log('Parsed structured data:', structuredData);
+                } catch (parseError) {
+                    console.error('=== JSON Parse Error ===');
+                    console.error('Parse error:', parseError);
+                    console.error('Content received:', content);
+                    console.error('Content length:', content.length);
+                    throw new Error('AI konnte die Daten nicht korrekt strukturieren. Versuche es erneut oder formuliere deinen Request anders. Fehler: ' + parseError.message);
+                }
+
+                // Fill in the structured fields
+                console.log('Filling structured fields with data:', structuredData);
+                
+                const titleField = document.getElementById('title');
+                const problemField = document.getElementById('problem');
+                const solutionField = document.getElementById('solution');
+                const additionalField = document.getElementById('additional');
+                
+                if (structuredData.title && titleField) {
+                    titleField.value = structuredData.title;
+                    console.log('Title set:', structuredData.title);
+                }
+                if (structuredData.problem && problemField) {
+                    problemField.value = structuredData.problem;
+                    console.log('Problem set (length:', structuredData.problem.length, '):', structuredData.problem.substring(0, 100));
+                }
+                if (structuredData.solution && solutionField) {
+                    solutionField.value = structuredData.solution || '';
+                    console.log('Solution set (length:', (structuredData.solution || '').length, ')');
+                }
+                if (structuredData.additional && additionalField) {
+                    additionalField.value = structuredData.additional || '';
+                    console.log('Additional set (length:', (structuredData.additional || '').length, ')');
+                }
+
+                // Hide the main voice input field after successful extraction
+                const voiceInputGroup = document.getElementById('voiceInputGroup');
+                if (voiceInputGroup) {
+                    voiceInputGroup.style.display = 'none';
+                    console.log('Voice input group hidden');
+                }
+
+                // Show structured fields and submit actions
+                const structuredFields = document.getElementById('structuredFields');
+                const mainActions = document.getElementById('mainActions');
+                const submitActions = document.getElementById('submitActions');
+                
+                if (structuredFields) {
+                    structuredFields.style.display = 'block';
+                    console.log('Structured fields displayed');
+                }
+                if (mainActions) {
+                    mainActions.style.display = 'none';
+                }
+                if (submitActions) {
+                    submitActions.style.display = 'flex';
+                }
+
+                // Reset status to idle with success message
+                updateStatus('voiceInput', 'idle', 'Fertig');
+                showNotification('Felder erfolgreich extrahiert! Du kannst sie jetzt bearbeiten oder direkt absenden.', 'success');
+
+                // Scroll to structured fields for better UX
+                document.getElementById('structuredFields').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                // Validate form
+                validateForm();
+
+            } catch (error) {
+                console.error('Error extracting structured data:', error);
+                let errorMessage = error.message;
+                
+                if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                    errorMessage = 'Netzwerkfehler: Die AI konnte nicht erreicht werden. Prüfe deine Verbindung und API-Key.';
+                } else if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+                    errorMessage = 'Authentifizierungsfehler: Der API-Key ist ungültig.';
+                }
+                
+                showNotification('Fehler bei der Extraktion: ' + errorMessage, 'error');
+                updateStatus('voiceInput', 'idle', 'Fehler');
+            }
+        }
+
+        function updateStatus(targetId, status, text) {
+            let statusIndicator, statusText, recordBtn;
+            
+            if (targetId === 'voiceInput') {
+                statusIndicator = document.getElementById('voiceStatus');
+                statusText = document.getElementById('voiceStatusText');
+                recordBtn = document.getElementById('recordVoice');
+            } else {
+                statusIndicator = document.getElementById(targetId + 'Status');
+                statusText = document.getElementById(targetId + 'StatusText');
+                recordBtn = document.getElementById('record' + targetId.charAt(0).toUpperCase() + targetId.slice(1));
+            }
+
+            if (statusIndicator) {
+                statusIndicator.className = 'status-indicator ' + status;
+            }
+            if (statusText) {
+                statusText.textContent = text;
+            }
+            if (recordBtn) {
+                if (status === 'recording') {
+                    recordBtn.classList.add('recording');
+                    recordBtn.innerHTML = '<span class="status-indicator recording"></span><span>⏹️ Aufnahme stoppen</span>';
+                } else if (status === 'processing') {
+                    recordBtn.classList.remove('recording');
+                    recordBtn.disabled = true;
+                    // Use the actual status text from the parameter
+                    const buttonText = text || 'Verarbeitung...';
+                    recordBtn.innerHTML = `<span class="status-indicator processing"></span><span>⏳ ${buttonText}</span>`;
+                } else {
+                    recordBtn.classList.remove('recording');
+                    recordBtn.disabled = false;
+                    recordBtn.innerHTML = '<span class="status-indicator idle"></span><span>🎤 Sprachaufnahme</span>';
+                }
+            }
+        }
+
+        // Form submission
+        document.getElementById('featureForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const issueData = buildIssueBody();
+            const issueUrl = buildGitHubIssueUrl(issueData);
+            window.open(issueUrl, '_blank');
+        });
+
+        // Copy to clipboard
+        document.getElementById('copyBtn').addEventListener('click', function() {
+            const issueData = buildIssueBody();
+            const textToCopy = formatIssueForClipboard(issueData);
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                showNotification('Issue-Text wurde in die Zwischenablage kopiert!', 'success');
+            }).catch(err => {
+                showNotification('Fehler beim Kopieren: ' + err, 'error');
+            });
+        });
+
+        function buildIssueBody() {
+            const title = document.getElementById('title').value.trim();
+            const problem = document.getElementById('problem').value.trim();
+            const solution = document.getElementById('solution').value.trim();
+            const additional = document.getElementById('additional').value.trim();
+
+            let body = '';
+            
+            if (problem) {
+                body += '**Welches Problem möchtest du lösen? Wann tritt es auf?**\n\n';
+                body += problem + '\n\n';
+            }
+
+            if (solution) {
+                body += '**Welche Lösungsideen hast du?**\n\n';
+                body += solution + '\n\n';
+            }
+
+            if (additional) {
+                body += '**Hast du zusätzliche Informationen (wie z. B. Screenshots)?**\n\n';
+                body += additional + '\n\n';
+            }
+
+            return {
+                title: title,
+                body: body
+            };
+        }
+
+        function buildGitHubIssueUrl(issueData) {
+            const baseUrl = 'https://github.com/mittwald/feature-requests/issues/new';
+            const params = new URLSearchParams({
+                title: issueData.title,
+                body: issueData.body
+            });
+            return baseUrl + '?' + params.toString();
+        }
+
+        function formatIssueForClipboard(issueData) {
+            return `Titel: ${issueData.title}\n\n${issueData.body}`;
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 5000);
+        }
+
+        // Form validation
+        function validateForm() {
+            const apiKey = apiKeyInput.value.trim();
+            const title = document.getElementById('title').value.trim();
+            const problem = document.getElementById('problem').value.trim();
+            const voiceInput = document.getElementById('voiceInput').value.trim();
+            const submitBtn = document.getElementById('submitBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            const extractBtn = document.getElementById('extractBtn');
+
+            // Enable extract button if there's voice input
+            if (apiKey && voiceInput) {
+                extractBtn.disabled = false;
+            } else {
+                extractBtn.disabled = true;
+            }
+
+            // Enable submit buttons if structured fields are filled
+            if (apiKey && title && problem) {
+                if (submitBtn) submitBtn.disabled = false;
+                if (copyBtn) copyBtn.disabled = false;
+            } else {
+                if (submitBtn) submitBtn.disabled = true;
+                if (copyBtn) copyBtn.disabled = true;
+            }
+        }
+
+        // Listen for input changes
+        const voiceInputElement = document.getElementById('voiceInput');
+        if (voiceInputElement) {
+            voiceInputElement.addEventListener('input', validateForm);
+        }
+        
+        document.getElementById('featureForm').addEventListener('input', validateForm);
+        apiKeyInput.addEventListener('input', validateForm);
+
+        // Listen to structured field changes
+        ['title', 'problem', 'solution', 'additional'].forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.addEventListener('input', validateForm);
+            }
+        });
+
+        // Form reset handler
+        document.getElementById('featureForm').addEventListener('reset', function() {
+            console.log('Form reset triggered');
+            
+            // Clear all audio chunks
+            audioChunks = [];
+            currentRecording = null;
+            currentTarget = null;
+            
+            // Stop any recording
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+            }
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            
+            // Reset structured fields
+            document.getElementById('title').value = '';
+            document.getElementById('problem').value = '';
+            document.getElementById('solution').value = '';
+            document.getElementById('additional').value = '';
+            
+            // Hide structured fields and show main input
+            document.getElementById('structuredFields').style.display = 'none';
+            document.getElementById('voiceInputGroup').style.display = 'block';
+            document.getElementById('mainActions').style.display = 'flex';
+            document.getElementById('submitActions').style.display = 'none';
+            
+            // Reset status
+            updateStatus('voiceInput', 'idle', 'Bereit');
+            
+            // Reset validation
+            setTimeout(validateForm, 100);
+        });
+
+        // Initialize button states
+        validateForm();
+    </script>
+</body>
+</html>
