@@ -1002,6 +1002,24 @@
                     console.log('Text preview (last 500 chars):', text.substring(text.length - 500));
                 }
 
+                // Security: Sanitize text input before sending to API
+                const sanitizeInput = (input) => {
+                    if (typeof input !== 'string') return '';
+                    // Remove potential script injection attempts, null bytes, and limit length
+                    const sanitized = input
+                        .replace(/<script[^>]*>.*?<\/script>/gi, '')
+                        .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
+                        .trim();
+                    // Limit input size to prevent DoS (max 50KB)
+                    return sanitized.substring(0, 50000);
+                };
+                
+                const sanitizedText = sanitizeInput(text);
+                if (sanitizedText.length === 0) {
+                    showNotification('Eingabe ist leer oder enthält ungültige Zeichen', 'error');
+                    return;
+                }
+                
                 const prompt = `Analysiere den folgenden Feature-Request SORGFÄLTIG und VOLLSTÄNDIG. Verwende den KOMPLETTEN Text - lass NICHTS aus.
 
 Extrahierte Informationen müssen den folgenden JSON-Struktur entsprechen:
@@ -1012,7 +1030,7 @@ Extrahierte Informationen müssen den folgenden JSON-Struktur entsprechen:
 
 WICHTIG: Der folgende Text ist KOMPLETT - verwende ALLE Informationen:
 """
-${text}
+${sanitizedText}
 """
 
 Analysiere den Text gründlich und extrahiere ALLE Informationen ohne etwas auszulassen. Antworte NUR mit einem gültigen JSON-Objekt im Format:
@@ -1020,7 +1038,8 @@ Analysiere den Text gründlich und extrahiere ALLE Informationen ohne etwas ausz
 
                 console.log('=== Sending to Mistral API ===');
                 console.log('Prompt length:', prompt.length);
-                console.log('Text in prompt length:', text.length);
+                console.log('Original text length:', text.length);
+                console.log('Sanitized text length:', sanitizedText.length);
                 console.log('Prompt preview (first 1000 chars):', prompt.substring(0, 1000));
 
                 const requestBody = {
@@ -1086,7 +1105,37 @@ Analysiere den Text gründlich und extrahiere ALLE Informationen ohne etwas ausz
                     
                     console.log('Parsing JSON string:', jsonString.substring(0, 500));
                     structuredData = JSON.parse(jsonString);
-                    console.log('Parsed structured data:', structuredData);
+                    
+                    // Security: Validate JSON structure and sanitize strings
+                    if (typeof structuredData !== 'object' || structuredData === null) {
+                        throw new Error('Invalid JSON structure: Expected object');
+                    }
+                    
+                    // Validate and sanitize each field
+                    const sanitizeString = (value) => {
+                        if (typeof value !== 'string') return '';
+                        // Remove potential script tags and null bytes
+                        return value.replace(/<script[^>]*>.*?<\/script>/gi, '')
+                                    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
+                                    .trim();
+                    };
+                    
+                    structuredData = {
+                        title: sanitizeString(structuredData.title || ''),
+                        problem: sanitizeString(structuredData.problem || ''),
+                        solution: sanitizeString(structuredData.solution || ''),
+                        additional: sanitizeString(structuredData.additional || '')
+                    };
+                    
+                    // Validate required fields
+                    if (!structuredData.title || structuredData.title.length === 0) {
+                        throw new Error('Title field is required but empty');
+                    }
+                    if (!structuredData.problem || structuredData.problem.length === 0) {
+                        throw new Error('Problem field is required but empty');
+                    }
+                    
+                    console.log('Parsed and validated structured data:', structuredData);
                 } catch (parseError) {
                     console.error('=== JSON Parse Error ===');
                     console.error('Parse error:', parseError);
@@ -1103,19 +1152,21 @@ Analysiere den Text gründlich und extrahiere ALLE Informationen ohne etwas ausz
                 const solutionField = document.getElementById('solution');
                 const additionalField = document.getElementById('additional');
                 
+                // Security: Use textContent-like assignment for input values (already sanitized above)
                 if (structuredData.title && titleField) {
+                    // Input values are automatically escaped by the browser
                     titleField.value = structuredData.title;
-                    console.log('Title set:', structuredData.title);
+                    console.log('Title set (length:', structuredData.title.length, ')');
                 }
                 if (structuredData.problem && problemField) {
                     problemField.value = structuredData.problem;
-                    console.log('Problem set (length:', structuredData.problem.length, '):', structuredData.problem.substring(0, 100));
+                    console.log('Problem set (length:', structuredData.problem.length, ')');
                 }
-                if (structuredData.solution && solutionField) {
+                if (solutionField) {
                     solutionField.value = structuredData.solution || '';
                     console.log('Solution set (length:', (structuredData.solution || '').length, ')');
                 }
-                if (structuredData.additional && additionalField) {
+                if (additionalField) {
                     additionalField.value = structuredData.additional || '';
                     console.log('Additional set (length:', (structuredData.additional || '').length, ')');
                 }
@@ -1188,14 +1239,25 @@ Analysiere den Text gründlich und extrahiere ALLE Informationen ohne etwas ausz
                 statusText.textContent = text;
             }
             if (recordBtn) {
+                // Security: Escape HTML to prevent XSS
+                const escapeHtml = (unsafe) => {
+                    if (!unsafe) return '';
+                    return String(unsafe)
+                        .replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;')
+                        .replace(/"/g, '&quot;')
+                        .replace(/'/g, '&#039;');
+                };
+                
                 if (status === 'recording') {
                     recordBtn.classList.add('recording');
                     recordBtn.innerHTML = '<span class="status-indicator recording"></span><span>⏹️ Aufnahme stoppen</span>';
                 } else if (status === 'processing') {
                     recordBtn.classList.remove('recording');
                     recordBtn.disabled = true;
-                    // Use the actual status text from the parameter
-                    const buttonText = text || 'Verarbeitung...';
+                    // Use the actual status text from the parameter, but escape it for security
+                    const buttonText = escapeHtml(text || 'Verarbeitung...');
                     recordBtn.innerHTML = `<span class="status-indicator processing"></span><span>⏳ ${buttonText}</span>`;
                 } else {
                     recordBtn.classList.remove('recording');
@@ -1255,16 +1317,31 @@ Analysiere den Text gründlich und extrahiere ALLE Informationen ohne etwas ausz
         }
 
         function buildGitHubIssueUrl(issueData) {
+            // Security: URLSearchParams automatically URL-encodes values, preventing injection
             const baseUrl = 'https://github.com/mittwald/feature-requests/issues/new';
+            
+            // Additional sanitization: ensure strings are valid
+            const sanitizeForUrl = (str) => {
+                if (typeof str !== 'string') return '';
+                // Remove null bytes and control characters
+                return str.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '').trim();
+            };
+            
             const params = new URLSearchParams({
-                title: issueData.title,
-                body: issueData.body
+                title: sanitizeForUrl(issueData.title || ''),
+                body: sanitizeForUrl(issueData.body || '')
             });
             return baseUrl + '?' + params.toString();
         }
 
         function formatIssueForClipboard(issueData) {
-            return `Titel: ${issueData.title}\n\n${issueData.body}`;
+            // Security: Sanitize output for clipboard
+            const sanitize = (str) => {
+                if (typeof str !== 'string') return '';
+                // Remove null bytes and control characters (except newlines and tabs)
+                return str.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '').trim();
+            };
+            return `Titel: ${sanitize(issueData.title || '')}\n\n${sanitize(issueData.body || '')}`;
         }
 
         function showNotification(message, type = 'success') {

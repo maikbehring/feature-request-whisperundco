@@ -21,6 +21,7 @@ Die Seite verwendet:
 ### 1. Voraussetzungen
 
 - Einen **mittwald AI-Hosting API-Key** (erhältlich im [mittwald mStudio](https://developer.mittwald.de/de/docs/v2/platform/aihosting/))
+- Einen **GitHub-Account** (erforderlich zum Publizieren im [mittwald Feature Tracker](https://github.com/mittwald/feature-requests))
 - Einen modernen Browser mit Mikrofon-Zugriff (Chrome, Firefox, Safari, Edge)
 - HTTPS oder localhost (für Mikrofon-Zugriff erforderlich)
 
@@ -75,11 +76,14 @@ start feature-request.html
 **Auf GitHub öffnen:**
 - Klicke auf **📝 Auf GitHub öffnen**
 - Die Seite öffnet GitHub Issues mit vorausgefüllten Daten
-- Überprüfe und klicke auf "Submit new issue"
+- **Wichtig**: Du musst bei GitHub angemeldet sein, um das Issue zu erstellen
+- Überprüfe den Inhalt und klicke auf "Submit new issue"
 
 **In Zwischenablage kopieren:**
 - Klicke auf **📋 In Zwischenablage kopieren**
-- Füge den Text manuell in GitHub ein
+- Öffne [mittwald Feature Requests](https://github.com/mittwald/feature-requests/issues/new) manuell
+- Melde dich bei GitHub an (falls noch nicht geschehen)
+- Füge den kopierten Text ein und erstelle das Issue
 
 ## Technische Details
 
@@ -121,8 +125,9 @@ start feature-request.html
 
 - **HTTPS erforderlich**: Für Mikrofon-Zugriff ist HTTPS oder localhost erforderlich
 - **API-Key benötigt**: Ein gültiger mittwald AI-Hosting API-Key ist erforderlich
+- **GitHub-Account erforderlich**: Zum Publizieren im Feature Tracker benötigst du einen GitHub-Account. Falls du noch keinen hast, kannst du dich kostenlos bei [GitHub registrieren](https://github.com/signup)
+- **GitHub-Login**: Du musst dich bei GitHub anmelden, um Issues im [mittwald Feature Tracker](https://github.com/mittwald/feature-requests) zu erstellen
 - **Audio-Format**: Das Audio wird automatisch von WebM zu WAV konvertiert
-- **GitHub-Login**: Du musst dich bei GitHub anmelden, um Issues zu erstellen
 
 ## Entwicklung
 

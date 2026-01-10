@@ -13,3 +13,21 @@ docs/
 
 # Logs
 *.log
+
+# Sensible Dateien und Umgebungsvariablen
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+*.p12
+*.p8
+secrets/
+credentials/
+
+# API Keys und Tokens (sollten niemals committed werden)
+*api*key*.txt
+*api*key*.json
+*secret*.txt
+*token*.txt
+*.apikey
