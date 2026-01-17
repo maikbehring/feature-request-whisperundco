@@ -1103,8 +1103,67 @@ Analysiere den Text gründlich und extrahiere ALLE Informationen ohne etwas ausz
                         }
                     }
                     
-                    console.log('Parsing JSON string:', jsonString.substring(0, 500));
-                    structuredData = JSON.parse(jsonString);
+                    console.log('Parsing JSON string (before cleaning):', jsonString.substring(0, 500));
+                    
+                    // Clean JSON string: Fix control characters in string literals
+                    // This handles cases where AI returns unescaped newlines, tabs, etc. in JSON strings
+                    try {
+                        structuredData = JSON.parse(jsonString);
+                    } catch (parseError) {
+                        if (parseError.message.includes('control character')) {
+                            console.log('Parse failed with control character error, attempting to fix...');
+                            
+                            // Fix control characters by replacing them in string literals
+                            // Process string literals more carefully
+                            let cleanedJson = '';
+                            let inString = false;
+                            let escaped = false;
+                            
+                            for (let i = 0; i < jsonString.length; i++) {
+                                const char = jsonString[i];
+                                
+                                if (escaped) {
+                                    cleanedJson += char;
+                                    escaped = false;
+                                    continue;
+                                }
+                                
+                                if (char === '\\') {
+                                    cleanedJson += char;
+                                    escaped = true;
+                                    continue;
+                                }
+                                
+                                if (char === '"') {
+                                    inString = !inString;
+                                    cleanedJson += char;
+                                    continue;
+                                }
+                                
+                                if (inString && /[\x00-\x1F\x7F]/.test(char)) {
+                                    // Replace control characters in strings with escaped versions
+                                    const escapeMap = {
+                                        '\n': '\\n',
+                                        '\r': '\\r',
+                                        '\t': '\\t',
+                                        '\b': '\\b',
+                                        '\f': '\\f'
+                                    };
+                                    cleanedJson += escapeMap[char] || '';
+                                } else {
+                                    cleanedJson += char;
+                                }
+                            }
+                            
+                            jsonString = cleanedJson;
+                            console.log('Cleaned JSON, attempting to parse again...');
+                            structuredData = JSON.parse(jsonString);
+                        } else {
+                            throw parseError;
+                        }
+                    }
+                    
+                    console.log('Successfully parsed JSON');
                     
                     // Security: Validate JSON structure and sanitize strings
                     if (typeof structuredData !== 'object' || structuredData === null) {
