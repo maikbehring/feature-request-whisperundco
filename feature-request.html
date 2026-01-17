@@ -1035,15 +1035,17 @@
                     return;
                 }
                 
-                const prompt = `Analysiere den folgenden Feature-Request SORGFÄLTIG und VOLLSTÄNDIG. Verwende den KOMPLETTEN Text - lass NICHTS aus.
+                const prompt = `Dies ist ein Feature-Tracker für mittwald-Kunden. Alle Feature-Requests beziehen sich auf mittwald-Produkte, Produktanpassungen oder Produktneuerungen. Interpretiere die Anfrage entsprechend im Kontext von mittwald-Produkten.
+
+Analysiere den folgenden Feature-Request SORGFÄLTIG und VOLLSTÄNDIG. Verwende den KOMPLETTEN Text - lass NICHTS aus.
 
 Extrahierte Informationen müssen den folgenden JSON-Struktur entsprechen:
-- "title": Kurzer, prägnanter Titel (max. 100 Zeichen) basierend auf dem Hauptinhalt
-- "problem": VOLLSTÄNDIGE Beschreibung des Problems. Was soll gelöst werden? Wann tritt es auf? Wer ist betroffen? Beschreibe ALLES was zum Problem erwähnt wird.
-- "solution": ALLE Lösungsideen, Vorschläge oder Ideen die erwähnt werden. Wenn keine Lösungsideen erwähnt werden, verwende "".
+- "title": Kurzer, prägnanter Titel (max. 100 Zeichen) basierend auf dem Hauptinhalt. Beziehe dich dabei auf mittwald-Produkte oder -Funktionen.
+- "problem": VOLLSTÄNDIGE Beschreibung des Problems im Kontext von mittwald-Produkten. Was soll in mittwald-Produkten gelöst werden? Wann tritt es auf? Wer ist betroffen? Beschreibe ALLES was zum Problem erwähnt wird.
+- "solution": ALLE Lösungsideen, Vorschläge oder Ideen die erwähnt werden, die sich auf mittwald-Produktanpassungen oder -Neuerungen beziehen. Wenn keine Lösungsideen erwähnt werden, verwende "".
 - "additional": NUR explizit genannte zusätzliche Informationen des Nutzers (z. B. Screenshots, Links, technische Details, die der Nutzer selbst erwähnt). KEINE eigenen Interpretationen oder Annahmen hinzufügen. Wenn der Nutzer keine zusätzlichen Informationen erwähnt, verwende "".
 
-WICHTIG: Der folgende Text ist KOMPLETT - verwende ALLE Informationen:
+WICHTIG: Der folgende Text ist KOMPLETT - verwende ALLE Informationen. Interpretiere alle Anfragen als Feature-Wünsche für mittwald-Produkte:
 """
 ${sanitizedText}
 """
@@ -1062,7 +1064,7 @@ Analysiere den Text gründlich und extrahiere ALLE Informationen ohne etwas ausz
                     messages: [
                         {
                             role: 'system',
-                            content: 'Du bist ein Assistent, der Feature-Requests analysiert und strukturierte Daten extrahiert. Analysiere den KOMPLETTEN Text sorgfältig und extrahiere ALLE Informationen. Nichts auslassen. Antworte IMMER NUR mit einem gültigen JSON-Objekt im folgenden Format: {"title": "...", "problem": "...", "solution": "...", "additional": "..."}. Für das Feld "additional": NUR explizit vom Nutzer genannte zusätzliche Informationen verwenden, KEINE eigenen Interpretationen hinzufügen. Wenn keine zusätzlichen Infos erwähnt werden, verwende "". Verwende den vollständigen Text für die Extraktion. Keine zusätzlichen Erklärungen, nur JSON.'
+                            content: 'Du bist ein Assistent für den mittwald Feature-Tracker. Du analysierst Feature-Requests von mittwald-Kunden, die sich auf mittwald-Produkte, Produktanpassungen oder Produktneuerungen beziehen. Interpretiere alle Anfragen im Kontext von mittwald-Produkten. Analysiere den KOMPLETTEN Text sorgfältig und extrahiere ALLE Informationen. Nichts auslassen. Antworte IMMER NUR mit einem gültigen JSON-Objekt im folgenden Format: {"title": "...", "problem": "...", "solution": "...", "additional": "..."}. Für das Feld "additional": NUR explizit vom Nutzer genannte zusätzliche Informationen verwenden, KEINE eigenen Interpretationen hinzufügen. Wenn keine zusätzlichen Infos erwähnt werden, verwende "". Verwende den vollständigen Text für die Extraktion. Keine zusätzlichen Erklärungen, nur JSON.'
                         },
                         {
                             role: 'user',
