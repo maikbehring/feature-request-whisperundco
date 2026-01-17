@@ -1041,7 +1041,7 @@ Extrahierte Informationen müssen den folgenden JSON-Struktur entsprechen:
 - "title": Kurzer, prägnanter Titel (max. 100 Zeichen) basierend auf dem Hauptinhalt
 - "problem": VOLLSTÄNDIGE Beschreibung des Problems. Was soll gelöst werden? Wann tritt es auf? Wer ist betroffen? Beschreibe ALLES was zum Problem erwähnt wird.
 - "solution": ALLE Lösungsideen, Vorschläge oder Ideen die erwähnt werden. Wenn keine Lösungsideen erwähnt werden, verwende "".
-- "additional": ALLE zusätzlichen Informationen wie Screenshots, Links, technische Details, Beispiele, etc. Wenn nichts Zusätzliches erwähnt wird, verwende "".
+- "additional": NUR explizit genannte zusätzliche Informationen des Nutzers (z. B. Screenshots, Links, technische Details, die der Nutzer selbst erwähnt). KEINE eigenen Interpretationen oder Annahmen hinzufügen. Wenn der Nutzer keine zusätzlichen Informationen erwähnt, verwende "".
 
 WICHTIG: Der folgende Text ist KOMPLETT - verwende ALLE Informationen:
 """
@@ -1062,7 +1062,7 @@ Analysiere den Text gründlich und extrahiere ALLE Informationen ohne etwas ausz
                     messages: [
                         {
                             role: 'system',
-                            content: 'Du bist ein Assistent, der Feature-Requests analysiert und strukturierte Daten extrahiert. Analysiere den KOMPLETTEN Text sorgfältig und extrahiere ALLE Informationen. Nichts auslassen. Antworte IMMER NUR mit einem gültigen JSON-Objekt im folgenden Format: {"title": "...", "problem": "...", "solution": "...", "additional": "..."}. Verwende den vollständigen Text für die Extraktion. Keine zusätzlichen Erklärungen, nur JSON.'
+                            content: 'Du bist ein Assistent, der Feature-Requests analysiert und strukturierte Daten extrahiert. Analysiere den KOMPLETTEN Text sorgfältig und extrahiere ALLE Informationen. Nichts auslassen. Antworte IMMER NUR mit einem gültigen JSON-Objekt im folgenden Format: {"title": "...", "problem": "...", "solution": "...", "additional": "..."}. Für das Feld "additional": NUR explizit vom Nutzer genannte zusätzliche Informationen verwenden, KEINE eigenen Interpretationen hinzufügen. Wenn keine zusätzlichen Infos erwähnt werden, verwende "". Verwende den vollständigen Text für die Extraktion. Keine zusätzlichen Erklärungen, nur JSON.'
                         },
                         {
                             role: 'user',
