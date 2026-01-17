@@ -340,9 +340,11 @@
                     </button>
                 </div>
                 <div class="api-key-info" style="margin-top: 12px;">
-                    🔒 <strong>Sicherheit:</strong> Dein API-Key wird nur lokal in deinem Browser gespeichert (localStorage) und niemals an Dritte weitergegeben. 
+                    🔒 <strong>Sicherheit:</strong> Dein API-Key wird nur lokal in deinem Browser gespeichert (localStorage) und niemals an Dritte weitergegeben. Nach der Nutzung kannst du den Key hier aus deinem localStorage wieder löschen, um sicherzustellen, dass er nicht mehr auf diesem Gerät gespeichert ist.
                     <br>
                     📖 <strong>API-Key erhalten:</strong> <a href="https://developer.mittwald.de/de/docs/v2/platform/aihosting/access-and-usage/" target="_blank">Anleitung zum Erstellen eines API-Keys im mStudio</a>
+                    <br>
+                    🗑️ <strong>API-Key löschen:</strong> <button type="button" id="deleteApiKey" style="background: none; border: none; color: #dc3545; text-decoration: underline; cursor: pointer; font-size: inherit; padding: 0; margin: 0; font-weight: inherit;">Key aus localStorage entfernen</button>
                 </div>
             </div>
 
@@ -489,6 +491,19 @@
             apiKeyInput.type = type;
             this.textContent = type === 'password' ? '👁️' : '🙈';
         });
+
+        // Delete API Key from localStorage
+        const deleteApiKeyBtn = document.getElementById('deleteApiKey');
+        if (deleteApiKeyBtn) {
+            deleteApiKeyBtn.addEventListener('click', function() {
+                if (confirm('Möchtest du den API-Key wirklich aus dem localStorage löschen? Das Feld wird geleert und du musst den Key erneut eingeben, um die Seite zu nutzen.')) {
+                    localStorage.removeItem('mittwald_ai_api_key');
+                    apiKeyInput.value = '';
+                    showNotification('API-Key wurde aus dem localStorage gelöscht.', 'success');
+                    validateForm();
+                }
+            });
+        }
 
         // Voice recording button
         const recordVoiceBtn = document.getElementById('recordVoice');
