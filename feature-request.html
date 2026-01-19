@@ -1358,6 +1358,12 @@ ${sanitizedText}
                         }
                     }
                     
+                    // Remove control characters that are not allowed in JSON strings
+                    // These characters cause "Bad control character" errors
+                    jsonString = jsonString
+                        // Remove control characters (except \n, \r, \t which need to be escaped)
+                        .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+                    
                     // Remove Markdown formatting from JSON string values
                     // This handles cases where AI returns **bold** or other markdown in JSON
                     // Process multiple times to handle nested or complex markdown
@@ -1377,8 +1383,34 @@ ${sanitizedText}
                             .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
                     }
                     
+                    // Fix unescaped newlines and other control characters in JSON string values
+                    // Replace literal newlines inside string values with escaped version
+                    jsonString = jsonString.replace(/(?<="[^"]*)\n(?=[^"]*")/g, '\\n');
+                    jsonString = jsonString.replace(/(?<="[^"]*)\r(?=[^"]*")/g, '\\r');
+                    jsonString = jsonString.replace(/(?<="[^"]*)\t(?=[^"]*")/g, '\\t');
+                    
                     console.log('Parsing JSON string (before cleaning):', jsonString.substring(0, 500));
-                    structuredData = JSON.parse(jsonString);
+                    
+                    // Try parsing, if it fails, try more aggressive cleaning
+                    try {
+                        structuredData = JSON.parse(jsonString);
+                    } catch (parseError) {
+                        console.warn('Parse failed with control character error, attempting to fix...');
+                        // More aggressive cleaning: remove all problematic characters
+                        jsonString = jsonString
+                            // Remove all control characters
+                            .replace(/[\x00-\x1F\x7F]/g, '')
+                            // Fix any remaining unescaped quotes in strings
+                            .replace(/(?<="[^"]*)"([^"]*)"([^"]*)"(?![^"]*":)/g, '$1\\"$2');
+                        
+                        console.log('Cleaned JSON, attempting to parse again...');
+                        try {
+                            structuredData = JSON.parse(jsonString);
+                        } catch (secondError) {
+                            console.error('Second parse attempt failed:', secondError);
+                            throw new Error('AI konnte die Daten nicht korrekt strukturieren. Versuche es erneut oder formuliere deinen Request anders. Fehler: ' + secondError.message);
+                        }
+                    }
                     
                     // Security: Validate JSON structure and sanitize strings
                     if (typeof structuredData !== 'object' || structuredData === null) {
