@@ -4,6 +4,10 @@ docs/
 # Sicherheitsdokumentation
 SECURITY.md
 
+# Markdown-Dokumentationsdateien
+*.md
+!README.md
+
 # macOS
 .DS_Store
 
