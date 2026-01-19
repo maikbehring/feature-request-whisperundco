@@ -13,7 +13,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f5f7fa;
             min-height: 100vh;
             padding: 20px;
             color: #333;
@@ -24,12 +24,12 @@
             margin: 0 auto;
             background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #4a90e2;
             color: white;
             padding: 40px;
             text-align: center;
@@ -83,8 +83,8 @@
         input[type="text"]:focus,
         textarea:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
         }
 
         textarea {
@@ -178,11 +178,11 @@
             margin-top: 10px;
             font-size: 0.9em;
             color: #555;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #4a90e2;
         }
 
         .example-text strong {
-            color: #667eea;
+            color: #4a90e2;
         }
 
         .actions {
@@ -205,13 +205,14 @@
         }
 
         .btn.primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #4a90e2;
             color: white;
         }
 
         .btn.primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 25px rgba(74, 144, 226, 0.3);
+            background: #357abd;
         }
 
         .btn.secondary {
@@ -308,7 +309,7 @@
         }
 
         .api-key-info a {
-            color: #667eea;
+            color: #4a90e2;
             text-decoration: none;
         }
 
@@ -427,9 +428,9 @@
             padding: 25px;
             background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
             border-radius: 12px;
-            border: 2px solid #667eea;
+            border: 2px solid #4a90e2;
             text-align: center;
-            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.15);
+            box-shadow: 0 4px 20px rgba(74, 144, 226, 0.15);
         }
 
         .cta-section p {
@@ -508,6 +509,40 @@
         .impressum a:hover {
             text-decoration: underline;
         }
+
+        .impressum-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 12px 15px;
+            background: #4a90e2;
+            color: white;
+            border-radius: 8px;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .impressum-toggle:hover {
+            background: #357abd;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+        }
+
+        .impressum-toggle h4 {
+            margin: 0;
+            font-size: 1em;
+            font-weight: 600;
+        }
+
+        .impressum-content {
+            display: none;
+            margin-top: 0;
+        }
+
+        .impressum-content.expanded {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -521,16 +556,16 @@
         </div>
 
         <div class="content">
-            <div class="form-group" style="margin-bottom: 30px; padding: 25px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 12px; border-left: 5px solid #667eea; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <div class="form-group" style="margin-bottom: 30px; padding: 25px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 12px; border-left: 5px solid #4a90e2; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                 <label for="apiKey" style="font-size: 1.2em; margin-bottom: 15px; display: block;">
                     🔑 mittwald AI API-Key <span class="required">*</span>
                 </label>
                 <div style="position: relative; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                     <input type="password" id="apiKey" name="apiKey" required 
                            placeholder="Dein mittwald AI-Hosting API-Key hier eingeben..."
-                           style="flex: 1; min-width: 250px; padding: 15px; border: 2px solid #667eea; border-radius: 8px; font-size: 1em; font-family: 'Courier New', monospace;">
+                           style="flex: 1; min-width: 250px; padding: 15px; border: 2px solid #4a90e2; border-radius: 8px; font-size: 1em; font-family: 'Courier New', monospace;">
                     <button type="button" id="toggleApiKey" 
-                            style="padding: 15px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1em; font-weight: 600; white-space: nowrap;"
+                            style="padding: 15px 20px; background: #4a90e2; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1em; font-weight: 600; white-space: nowrap;"
                             title="API-Key anzeigen/verstecken">
                         👁️
                     </button>
@@ -657,7 +692,7 @@
                 </div>
 
                 <div class="actions" id="mainActions">
-                    <button type="button" class="btn primary" id="extractBtn" style="background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);">
+                    <button type="button" class="btn primary" id="extractBtn">
                         🤖 Felder mit AI extrahieren
                     </button>
                     <button type="reset" class="btn secondary">
@@ -735,38 +770,46 @@
             </div>
 
             <!-- Impressum -->
-            <div class="impressum">
-                <h3>Impressum</h3>
-                <p>Diese Webseite wird von der <strong>Mittwald CM Service GmbH & Co. KG</strong> betrieben. Alle Rechte vorbehalten. Alle auf der Webseite genannten Informationen und Bilder sind Eigentum der Mittwald CM Service GmbH & Co. KG.</p>
-                
-                <p><strong>Mittwald CM Service GmbH & Co. KG</strong><br>
-                Königsberger Straße 4-6<br>
-                32339 Espelkamp</p>
-                
-                <p>
-                    Telefon: <a href="tel:+495772293100">+49-5772-293-100</a><br>
-                    Telefax: +49-5772-293-333
-                </p>
-                
-                <p>
-                    HRA: 6640, AG Bad Oeynhausen<br>
-                    USt. ID-Nr: DE814773217
-                </p>
-                
-                <p>
-                    Komplementärin: Robert Meyer Verwaltungs GmbH, AG Bad Oeynhausen HRB 13260<br>
-                    vertreten durch die Geschäftsführer: Robert Meyer, Florian Jürgens
-                </p>
-                
-                <p>
-                    Verantwortlich für den Inhalt nach § 18 Abs. 2 Medienstaatsvertrag (MStV):<br>
-                    Robert Meyer, Florian Jürgens (Anschrift s. o.)
-                </p>
-                
-                <p>
-                    <strong>Verantwortlicher Produktmanager:</strong> Maik Behring<br>
-                    Es handelt sich um eine Testseite zur Veranschaulichung von Funktion des mittwald AI Hostings.
-                </p>
+            <div style="margin-top: 30px;">
+                <div class="impressum-toggle" id="impressumToggle">
+                    <h4>📄 Impressum</h4>
+                    <span id="impressumToggleIcon">▼</span>
+                </div>
+                <div class="impressum-content" id="impressumContent">
+                    <div class="impressum">
+                        <h3>Impressum</h3>
+                        <p>Diese Webseite wird von der <strong>Mittwald CM Service GmbH & Co. KG</strong> betrieben. Alle Rechte vorbehalten. Alle auf der Webseite genannten Informationen und Bilder sind Eigentum der Mittwald CM Service GmbH & Co. KG.</p>
+                        
+                        <p><strong>Mittwald CM Service GmbH & Co. KG</strong><br>
+                        Königsberger Straße 4-6<br>
+                        32339 Espelkamp</p>
+                        
+                        <p>
+                            Telefon: <a href="tel:+495772293100">+49-5772-293-100</a><br>
+                            Telefax: +49-5772-293-333
+                        </p>
+                        
+                        <p>
+                            HRA: 6640, AG Bad Oeynhausen<br>
+                            USt. ID-Nr: DE814773217
+                        </p>
+                        
+                        <p>
+                            Komplementärin: Robert Meyer Verwaltungs GmbH, AG Bad Oeynhausen HRB 13260<br>
+                            vertreten durch die Geschäftsführer: Robert Meyer, Florian Jürgens
+                        </p>
+                        
+                        <p>
+                            Verantwortlich für den Inhalt nach § 18 Abs. 2 Medienstaatsvertrag (MStV):<br>
+                            Robert Meyer, Florian Jürgens (Anschrift s. o.)
+                        </p>
+                        
+                        <p>
+                            <strong>Verantwortlicher Produktmanager:</strong> Maik Behring<br>
+                            Es handelt sich um eine Testseite zur Veranschaulichung von Funktion des mittwald AI Hostings.
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1065,6 +1108,18 @@ WICHTIG:
             });
         }
 
+        // Toggle Impressum Section
+        const impressumToggle = document.getElementById('impressumToggle');
+        const impressumContent = document.getElementById('impressumContent');
+        const impressumToggleIcon = document.getElementById('impressumToggleIcon');
+        
+        if (impressumToggle && impressumContent) {
+            impressumToggle.addEventListener('click', function() {
+                impressumContent.classList.toggle('expanded');
+                impressumToggleIcon.textContent = impressumContent.classList.contains('expanded') ? '▲' : '▼';
+            });
+        }
+
         // System Prompt Management
         const SYSTEM_PROMPT_STORAGE_KEY = 'mittwald_feature_request_system_prompt';
         const systemPromptTextarea = document.getElementById('systemPrompt');
@@ -1178,7 +1233,7 @@ WICHTIG:
                         wasReadOnly = true;
                         field.readOnly = false;
                         field.style.background = 'white';
-                        field.style.borderColor = '#667eea';
+                        field.style.borderColor = '#4a90e2';
                         field.style.cursor = 'text';
                         field.required = field.id === 'title' || field.id === 'problem';
                     } else {
