@@ -591,33 +591,6 @@
                         <span>→</span>
                     </a>
                 </div>
-
-            </div>
-                <div class="system-prompt-toggle" id="systemPromptToggle">
-                    <h3>⚙️ System Prompt (AI-Konfiguration)</h3>
-                    <span id="systemPromptToggleIcon">▼</span>
-                </div>
-                <div class="system-prompt-content" id="systemPromptContent">
-                    <label for="systemPrompt" style="display: block; margin-bottom: 10px; font-weight: 600; color: #555;">
-                        System Prompt für die Feature-Request-Analyse:
-                    </label>
-                    <textarea id="systemPrompt" class="system-prompt-textarea" 
-                              placeholder="System Prompt wird geladen..."></textarea>
-                    <div class="system-prompt-actions">
-                        <button type="button" id="saveSystemPrompt" 
-                                style="padding: 12px 24px; background: #4a90e2; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1em;">
-                            💾 System Prompt speichern
-                        </button>
-                        <button type="button" id="resetSystemPrompt" 
-                                style="padding: 12px 24px; background: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1em;">
-                            🔄 Auf Standard zurücksetzen
-                        </button>
-                    </div>
-                    <div class="system-prompt-info">
-                        <strong>ℹ️ Info:</strong> Der System Prompt steuert, wie die AI deine Feature-Requests analysiert und strukturiert. 
-                        Änderungen werden lokal in deinem Browser gespeichert und bei der nächsten Analyse verwendet.
-                    </div>
-                </div>
             </div>
 
             <form id="featureForm">
@@ -843,6 +816,12 @@ Kund:innen reichen Feature Requests ein – oft unscharf formuliert, aus Agentur
 
 Deine Aufgabe ist es, aus einem freien Text (oder Sprachtranskript) strukturierte Feature-Request-Daten zu extrahieren.
 
+🚨 KRITISCH - KEINE ERFUNDENEN DATEN:
+- Erfinde KEINE Statistiken, Prozentsätze, Nutzerzahlen oder interne Daten
+- Verwende KEINE Formulierungen wie "laut internen Daten", "78% der Nutzer", "Token-Verbrauch 2024" etc., wenn diese nicht im Input stehen
+- Verwende NUR Informationen, die tatsächlich im Input-Text des Feature-Requests enthalten sind
+- Wenn Dringlichkeit oder Business-Impact nicht erwähnt werden, lasse diese Felder leer oder verwende neutrale Formulierungen ohne Zahlen
+
 WICHTIG - Perspektive und Kontext:
 - Der Feature-Request-Autor ist IMMER ein Freelancer, eine Digitalagentur oder Webagentur (mittwald-Kunde)
 - Wenn der Autor von "Kunden" spricht, sind das IMMER seine eigenen Kunden (die er als Agentur/Freelancer betreut)
@@ -1000,10 +979,11 @@ Gib ausschließlich die folgenden vier Felder aus:
   - betroffene Produkte (falls unsicher)
   - Zielgruppen (immer aus Sicht des Autors: Agentur/Freelancer oder dessen eigene Kunden)
   - Workarounds
-  - Business-Impact
-  - Dringlichkeit
+  - Business-Impact (NUR wenn im Input erwähnt)
+  - Dringlichkeit (NUR wenn im Input erwähnt, KEINE erfundenen Prozentsätze oder Statistiken)
   - offene Punkte
 - WICHTIG: Wenn "Kunden" erwähnt werden → IMMER die eigenen Kunden des Autors (Agentur/Freelancer), nicht mittwald-Kunden
+- KRITISCH: Erfinde KEINE Statistiken, Prozentsätze, Nutzerzahlen, interne Daten oder ähnliche Fakten. Verwende NUR Informationen, die tatsächlich im Input-Text stehen.
 
 Umgang mit Unklarheit:
 - Keine Rückfragen stellen
@@ -1014,6 +994,10 @@ Umgang mit Unklarheit:
 Qualitätsanforderungen:
 - Klare, sachliche deutsche Sprache
 - Keine Annahmen als Fakten darstellen
+- KEINE Statistiken, Prozentsätze, Nutzerzahlen oder interne Daten erfinden
+- KEINE "interne mittwald-Daten", "laut internen Daten" oder ähnliche Formulierungen verwenden, wenn diese nicht im Input stehen
+- KEINE erfundenen Zahlen, Prozentsätze oder Metriken (z. B. "78% der Nutzer", "laut Token-Verbrauch 2024")
+- Verwende NUR Informationen, die tatsächlich im Input-Text des Feature-Requests stehen
 - Keine sensiblen Daten wiederholen (API-Keys, Passwörter → „sensibler Wert entfernt")
 - Struktur > Fließtext
 - Keine zusätzlichen Erklärungen außerhalb der vier Felder
