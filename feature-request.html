@@ -1358,13 +1358,7 @@ ${sanitizedText}
                         }
                     }
                     
-                    // Remove control characters that are not allowed in JSON strings
-                    // These characters cause "Bad control character" errors
-                    jsonString = jsonString
-                        // Remove control characters (except \n, \r, \t which need to be escaped)
-                        .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
-                    
-                    // Remove Markdown formatting from JSON string values
+                    // Remove Markdown formatting from JSON string values first
                     // This handles cases where AI returns **bold** or other markdown in JSON
                     // Process multiple times to handle nested or complex markdown
                     for (let i = 0; i < 3; i++) {
@@ -1383,11 +1377,57 @@ ${sanitizedText}
                             .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
                     }
                     
-                    // Fix unescaped newlines and other control characters in JSON string values
-                    // Replace literal newlines inside string values with escaped version
-                    jsonString = jsonString.replace(/(?<="[^"]*)\n(?=[^"]*")/g, '\\n');
-                    jsonString = jsonString.replace(/(?<="[^"]*)\r(?=[^"]*")/g, '\\r');
-                    jsonString = jsonString.replace(/(?<="[^"]*)\t(?=[^"]*")/g, '\\t');
+                    // Fix unescaped newlines in JSON string values using a state machine approach
+                    // This handles multi-line strings correctly by tracking when we're inside a string
+                    let result = '';
+                    let inString = false;
+                    let escapeNext = false;
+                    for (let i = 0; i < jsonString.length; i++) {
+                        const char = jsonString[i];
+                        
+                        if (escapeNext) {
+                            // We're processing an escaped character
+                            result += char;
+                            escapeNext = false;
+                            continue;
+                        }
+                        
+                        if (char === '\\') {
+                            // Backslash - next char is escaped
+                            result += char;
+                            escapeNext = true;
+                            continue;
+                        }
+                        
+                        if (char === '"') {
+                            // Quote - toggle string state (unless it's escaped, which we already handled)
+                            inString = !inString;
+                            result += char;
+                            continue;
+                        }
+                        
+                        if (inString) {
+                            // Inside a string: escape control characters
+                            if (char === '\n') {
+                                result += '\\n';
+                            } else if (char === '\r') {
+                                result += '\\r';
+                            } else if (char === '\t') {
+                                result += '\\t';
+                            } else if (/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/.test(char)) {
+                                // Remove other control characters
+                                continue;
+                            } else {
+                                result += char;
+                            }
+                        } else {
+                            // Outside strings: keep as is (but remove control chars)
+                            if (!/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/.test(char)) {
+                                result += char;
+                            }
+                        }
+                    }
+                    jsonString = result;
                     
                     console.log('Parsing JSON string (before cleaning):', jsonString.substring(0, 500));
                     
