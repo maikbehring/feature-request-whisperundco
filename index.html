@@ -493,198 +493,6 @@
         const CHAT_API_URL = 'https://llm.aihosting.mittwald.de/v1/chat/completions';
         const CHAT_MODEL = 'Mistral-Small-3.2-24B-Instruct'; // For structuring the feature request (exact case from API)
 
-        // Systemprompt für Feature-Request-Analyse bei mittwald
-        const FEATURE_REQUEST_SYSTEM_PROMPT = `Du bist ein strukturierender Analyse-Assistent für mittwald, einen Hosting-Dienstleister für Webagenturen, Digitalagenturen und Freelancer.
-Kund:innen reichen Feature Requests ein – oft unscharf formuliert, aus Agentur-Perspektive oder im Namen von Endkund:innen.
-
-Deine Aufgabe ist es, aus einem freien Text (oder Sprachtranskript) strukturierte Feature-Request-Daten zu extrahieren.
-
-WICHTIG - Perspektive und Kontext:
-- Der Feature-Request-Autor ist IMMER ein Freelancer, eine Digitalagentur oder Webagentur (mittwald-Kunde)
-- Wenn der Autor von "Kunden" spricht, sind das IMMER seine eigenen Kunden (die er als Agentur/Freelancer betreut)
-- NICHT die mittwald-Kunden (andere mittwald-Nutzer)
-- Schreibe IMMER aus Sicht des Feature-Request-Autors (Agentur/Freelancer)
-- Wenn der Autor sagt "meine Kunden", "für meine Kunden", etc. → das sind seine eigenen Kunden, für die er als Agentur/Freelancer arbeitet
-
-Unternehmens- & Produktkontext (verbindlich)
-
-Unternehmen:
-- Name: mittwald
-  → immer exakt so schreiben: mittwald
-  → falsche Varianten („Midwald", „Mittwald") immer korrigieren
-
-Verwaltungsoberflächen:
-- Aktuelle Verwaltungsoberfläche: mStudio
-  → immer exakt mStudio
-- Alte Verwaltungsoberfläche: Kundencenter
-  → immer exakt Kundencenter
-
-Wenn Nutzer:innen von „altem Backend", „alter Oberfläche", „früher" sprechen, ist Kundencenter gemeint (sofern Kontext Verwaltung).
-
-Zielgruppen:
-Hauptzielgruppe von mittwald:
-- Webagenturen
-- Digitalagenturen
-- Freelancer
-
-Feature Requests können:
-- eigene Agentur-Workflows betreffen oder
-- Anforderungen beschreiben, die der Autor für seine eigenen Kunden (nicht mittwald-Kunden) benötigt
-→ Beide Perspektiven sind gleichwertig zu behandeln, aber IMMER aus Sicht des Autors (Agentur/Freelancer).
-
-Produktportfolio (Orientierungswissen, keine Erfindungen):
-Feature Requests können sich auf alle Bereiche von mittwald beziehen, insbesondere:
-
-Hosting:
-- Webhosting (Managed Apps wie WordPress, TYPO3, Shopware etc.)
-- vServer (Container, Node.js, Redis, API/CLI)
-- Dedicated Server
-
-Domains & E-Mail:
-- Domainverwaltung & DNS (A, AAAA, MX, TXT, SRV, NS)
-- E-Mail Postfächer, Migration, Spamfilter
-
-Container & AI-Hosting:
-- Container Hosting (Docker, eigene Images, SSH)
-- AI-Hosting (vollständige Details siehe unten)
-
-Verwaltung & Automatisierung:
-- mStudio
-- REST API
-- CLI
-- Terraform
-- Rollen & Rechte
-- Multi-Projekt- und Agentur-Setups
-
-Infrastruktur & Sicherheit:
-- Backups
-- Monitoring
-- DDoS-Schutz
-- ISO 27001 / DSGVO
-
-👉 Wenn ein Request kein konkretes Produkt nennt, bleibe bewusst produktneutral und ordne ihn nicht spekulativ zu.
-
-AI-Hosting Produktdetails (PRIMÄR für AI/KI-bezogene Feature Requests verwenden):
-Wenn ein Feature Request AI/KI-Themen, Sprachmodelle, LLMs, Transkription, Embeddings, Code-Generierung oder ähnliche KI-Funktionalitäten betrifft, verwende IMMER diese detaillierten AI-Hosting-Informationen:
-mittwald bietet AI-Hosting als vollständig verwalteten Service für DSGVO-konforme KI-Anwendungen.
-
-Verfügbare Modelle:
-- Ministral-3-14B-Instruct-2512: Europäisches Open-Source-Modell mit 14 Milliarden Parametern, optimiert für hochwertige Text-, Chat- und Vision-Anwendungen
-- Devstral-Small-2-24B-Instruct-2512: Coding-Modell für Code-Generierung, Debugging und agentische Programmieraufgaben
-- gpt-oss-120b: Open-Source-Modell von OpenAI (Apache 2.0-Lizenz), starkes Reasoning und agentische Fähigkeiten
-- Whisper-Large-V3-Turbo: Speech-to-Text-Modell für schnelle und präzise Transkription in zahlreichen Sprachen
-- Qwen3-Embedding-8B: Embedding-Modell für semantische Suche, Textähnlichkeit, RAG-Setups und Empfehlungssysteme
-
-Tarife:
-- Starter: 9 €/Monat, 5 Mio. Tokens/Monat, 30 Requests/Minute
-- Pro: 39 €/Monat, 75 Mio. Tokens/Monat, 60 Requests/Minute (EMPFOHLEN)
-- Business: 149 €/Monat, 300 Mio. Tokens/Monat, 150 Requests/Minute
-- Enterprise Dedicated: 999 €/Monat, eigene GPU-Ressourcen, Milliarden Tokens/Monat, eigene RTX PRO 6000
-
-Features:
-- OpenAI-kompatible API
-- Unbegrenzte API-Keys
-- DSGVO-konformes Hosting in Deutschland
-- Alle Daten bleiben in Deutschland, keine Trainingsdaten gespeichert
-- Einfache Implementierung über API-Key
-- Verwaltung im mStudio
-- Open WebUI Container verfügbar
-- Integration in TYPO3, WordPress & Co. möglich
-
-Wichtige Details:
-- Keine Mindestlaufzeit, monatlich kündbar
-- Token-Limits: Warnung bei 75% Auslastung, E-Mail-Benachrichtigung bei 90%
-- Aktuell kein harter Cut bei Limit-Überschreitung (temporär)
-- Perspektivisch: Pay-per-Token und automatisches Stoppen bei Überschreitung geplant
-- Token-Verbrauch transparent im mStudio einsehbar
-- Alle Tarife haben monatliche Laufzeiten, flexibles Upgrade/Downgrade möglich
-
-Technische Details:
-- API-Key abrufbar im mStudio
-- OpenAI-kompatible API-Schnittstelle
-- Alle Anfragen werden ausschließlich innerhalb der mittwald-Infrastruktur verarbeitet
-- Kein Datentransfer außerhalb Deutschlands
-- Eingaben werden nicht zum Training der Modelle verwendet
-- Inhalte werden nicht dauerhaft gespeichert, nur zur unmittelbaren Verarbeitung
-
-Integration:
-- Viele CMS (TYPO3, WordPress) unterstützen Plugins mit OpenAI-kompatibler API-Anbindung
-- Open WebUI Container im mStudio mit wenigen Klicks erstellbar
-- Dokumentation im Developer Portal verfügbar
-
-Wenn ein Feature Request AI/KI-Themen betrifft, beziehe diese Produktdetails ein und verwende die korrekten Modellnamen und Tarifinformationen.
-
-Normalisierung & Schreibregeln (sehr wichtig):
-Normalisiere diese Begriffe konsequent:
-- mittwald
-- mStudio
-- Kundencenter
-
-Korrigiere typische Varianten stillschweigend.
-
-Erfinde keine Produktnamen, Features oder Preise.
-
-Wenn etwas unklar ist, beschreibe es abstrakt („Verwaltungsoberfläche", „Hosting-Umgebung").
-
-Zu extrahierende Felder:
-Gib ausschließlich die folgenden vier Felder aus:
-
-1. Titel:
-- 6–12 Wörter
-- Ergebnisorientiert
-- Präzise, kein Marketing
-- Optional mit Kontext (z. B. „mStudio:"), nur wenn eindeutig
-
-2. Problem:
-- Beschreibt:
-  - aktuellen Ist-Zustand
-  - Schmerzpunkt
-  - betroffene Nutzergruppe (immer aus Sicht des Autors: Agentur/Freelancer oder dessen eigene Kunden)
-- Fokus auf das Hauptproblem
-- Sachlich, keine Lösung vorwegnehmen
-- Wenn "Kunden" erwähnt werden → IMMER die eigenen Kunden des Autors (Agentur/Freelancer), nicht mittwald-Kunden
-
-3. Lösungsideen:
-- Konkrete, umsetzungsnahe Vorschläge
-- UI-, Workflow-, API- oder Regel-Ebene
-- Wenn keine Lösung genannt wurde:
-  - Formuliere 1–3 plausible Vorschläge
-  - Klar kennzeichnen als „Mögliche Umsetzung"
-
-4. Zusätzliche Informationen:
-- Alles, was nicht sauber in die anderen Felder passt, z. B.:
-  - betroffene Produkte (falls unsicher)
-  - Zielgruppen (immer aus Sicht des Autors: Agentur/Freelancer oder dessen eigene Kunden)
-  - Workarounds
-  - Business-Impact
-  - Dringlichkeit
-  - offene Punkte
-- WICHTIG: Wenn "Kunden" erwähnt werden → IMMER die eigenen Kunden des Autors (Agentur/Freelancer), nicht mittwald-Kunden
-
-Umgang mit Unklarheit:
-- Keine Rückfragen stellen
-- Stattdessen:
-  - neutral bleiben
-  - in „Zusätzliche Informationen" eine kurze Liste „Offene Punkte:" ergänzen (max. 3)
-
-Qualitätsanforderungen:
-- Klare, sachliche deutsche Sprache
-- Keine Annahmen als Fakten darstellen
-- Keine sensiblen Daten wiederholen (API-Keys, Passwörter → „sensibler Wert entfernt")
-- Struktur > Fließtext
-- Keine zusätzlichen Erklärungen außerhalb der vier Felder
-- KEINE Markdown-Formatierung im JSON verwenden (kein **, kein *, keine Code-Blöcke innerhalb der JSON-Werte)
-- Reines, gültiges JSON ohne Markdown-Syntax
-
-Antworte IMMER NUR mit einem gültigen JSON-Objekt im folgenden Format: {"title": "...", "problem": "...", "solution": "...", "additional": "..."}. 
-
-WICHTIG: 
-- Verwende KEINE Markdown-Formatierung (kein **bold**, kein *italic*, kein code) innerhalb der JSON-Werte
-- Verwende KEINE Markdown-Formatierung im JSON-Objekt selbst
-- Nur reines, gültiges JSON ohne Markdown-Syntax
-- Verwende den vollständigen Text für die Extraktion
-- Keine zusätzlichen Erklärungen, nur JSON`;
-
         // ⚠️ OPTIONAL: Fest hinterlegter API-Key (nur für Demo/Entwicklung)
         // LASS DIESES FELD LEER für Produktion oder wenn du den Key nicht im Code haben möchtest!
         // Wenn hier ein Key eingetragen ist, wird dieser verwendet, wenn kein Key im Input-Feld oder localStorage vorhanden ist.
@@ -1289,13 +1097,21 @@ WICHTIG:
                     return;
                 }
                 
-                // User-Prompt: Nur der Feature-Request-Text, da der Systemprompt alle Anweisungen enthält
-                const prompt = `Analysiere den folgenden Feature-Request und extrahiere die strukturierten Daten gemäß den Anweisungen im Systemprompt.
+                const prompt = `Analysiere den folgenden Feature-Request SORGFÄLTIG und VOLLSTÄNDIG. Verwende den KOMPLETTEN Text - lass NICHTS aus.
 
-Feature-Request:
+Extrahierte Informationen müssen den folgenden JSON-Struktur entsprechen:
+- "title": Kurzer, prägnanter Titel (max. 100 Zeichen) basierend auf dem Hauptinhalt
+- "problem": VOLLSTÄNDIGE Beschreibung des Problems. Was soll gelöst werden? Wann tritt es auf? Wer ist betroffen? Beschreibe ALLES was zum Problem erwähnt wird.
+- "solution": ALLE Lösungsideen, Vorschläge oder Ideen die erwähnt werden. Wenn keine Lösungsideen erwähnt werden, verwende "".
+- "additional": ALLE zusätzlichen Informationen wie Screenshots, Links, technische Details, Beispiele, etc. Wenn nichts Zusätzliches erwähnt wird, verwende "".
+
+WICHTIG: Der folgende Text ist KOMPLETT - verwende ALLE Informationen:
 """
 ${sanitizedText}
-"""`;
+"""
+
+Analysiere den Text gründlich und extrahiere ALLE Informationen ohne etwas auszulassen. Antworte NUR mit einem gültigen JSON-Objekt im Format:
+{"title": "...", "problem": "...", "solution": "...", "additional": "..."}`;
 
                 console.log('=== Sending to Mistral API ===');
                 console.log('Prompt length:', prompt.length);
@@ -1308,7 +1124,7 @@ ${sanitizedText}
                     messages: [
                         {
                             role: 'system',
-                            content: FEATURE_REQUEST_SYSTEM_PROMPT
+                            content: 'Du bist ein Assistent, der Feature-Requests analysiert und strukturierte Daten extrahiert. Analysiere den KOMPLETTEN Text sorgfältig und extrahiere ALLE Informationen. Nichts auslassen. Antworte IMMER NUR mit einem gültigen JSON-Objekt im folgenden Format: {"title": "...", "problem": "...", "solution": "...", "additional": "..."}. Verwende den vollständigen Text für die Extraktion. Keine zusätzlichen Erklärungen, nur JSON.'
                         },
                         {
                             role: 'user',
@@ -1364,26 +1180,7 @@ ${sanitizedText}
                         }
                     }
                     
-                    // Remove Markdown formatting from JSON string values
-                    // This handles cases where AI returns **bold** or other markdown in JSON
-                    // Process multiple times to handle nested or complex markdown
-                    for (let i = 0; i < 3; i++) {
-                        jsonString = jsonString
-                            // Remove markdown bold (**text** -> text) - handle multiple asterisks
-                            .replace(/\*\*+([^*]+?)\*\*+/g, '$1')
-                            // Remove markdown italic (*text* -> text, but be careful with JSON structure)
-                            .replace(/(?<!")\*([^*\n"']+?)\*(?!"|'|:)/g, '$1')
-                            // Remove markdown code backticks
-                            .replace(/`([^`]+)`/g, '$1')
-                            // Remove markdown headers (# ## ###)
-                            .replace(/^#{1,6}\s+/gm, '')
-                            // Remove markdown list markers (- * +)
-                            .replace(/^[\s]*[-*+]\s+/gm, '')
-                            // Remove markdown links [text](url) -> text
-                            .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
-                    }
-                    
-                    console.log('Parsing JSON string (before cleaning):', jsonString.substring(0, 500));
+                    console.log('Parsing JSON string:', jsonString.substring(0, 500));
                     structuredData = JSON.parse(jsonString);
                     
                     // Security: Validate JSON structure and sanitize strings
@@ -1395,42 +1192,9 @@ ${sanitizedText}
                     const sanitizeString = (value) => {
                         if (typeof value !== 'string') return '';
                         // Remove potential script tags and null bytes
-                        let sanitized = value.replace(/<script[^>]*>.*?<\/script>/gi, '')
+                        return value.replace(/<script[^>]*>.*?<\/script>/gi, '')
                                     .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
                                     .trim();
-                        
-                        // Remove Markdown formatting from string values
-                        // Process multiple times to handle nested or complex markdown
-                        for (let i = 0; i < 3; i++) {
-                            sanitized = sanitized
-                                // Remove markdown bold (**text** -> text) - handle multiple asterisks
-                                .replace(/\*\*+([^*]+?)\*\*+/g, '$1')
-                                // Remove markdown italic (*text* -> text, but be careful not to break JSON structure)
-                                .replace(/(?<!")\*([^*\n"']+?)\*(?!"|'|:)/g, '$1')
-                                // Remove markdown code backticks
-                                .replace(/`([^`]+)`/g, '$1')
-                                // Remove markdown headers (# ## ###)
-                                .replace(/^#{1,6}\s+/gm, '')
-                                // Remove markdown list markers at start of lines (- * +)
-                                .replace(/^[\s]*[-*+]\s+/gm, '')
-                                // Remove markdown links [text](url) -> text
-                                .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
-                        }
-                        
-                        // Normalize mittwald-specific terms (as per system prompt)
-                        // Normalize "mittwald" variations
-                        sanitized = sanitized.replace(/\b(Midwald|Mittwald|midwald|MIDWALD)\b/gi, 'mittwald');
-                        // Normalize "mStudio" variations
-                        sanitized = sanitized.replace(/\b(mstudio|MStudio|MSTUDIO|m-studio|M-Studio)\b/gi, 'mStudio');
-                        // Normalize "Kundencenter" variations
-                        sanitized = sanitized.replace(/\b(kundencenter|KundenCenter|KUNDENCENTER|kunden-center|Kunden-Center)\b/gi, 'Kundencenter');
-                        // Fix common AI-Hosting naming errors
-                        sanitized = sanitized.replace(/\bMidori-AI-Hosting\b/gi, 'mittwald AI-Hosting');
-                        sanitized = sanitized.replace(/\bMidori\b/gi, 'mittwald');
-                        // Fix "MidFist" -> should be checked if this is a real term or should be normalized
-                        // For now, keeping it as is since it might be a specific term
-                        
-                        return sanitized;
                     };
                     
                     structuredData = {

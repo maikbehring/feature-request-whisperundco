@@ -27,6 +27,14 @@ Die Seite verwendet:
 
 ### 2. Seite öffnen
 
+**Option A: GitHub Pages (empfohlen)**
+- Die Seite ist verfügbar unter: `https://maikbehring.github.io/feature-request-whisperundco/`
+- Oder öffne direkt: `https://maikbehring.github.io/feature-request-whisperundco/feature-request.html`
+- ✅ Automatisches HTTPS (für Mikrofon-Zugriff erforderlich)
+- ✅ Keine Installation nötig
+
+**Option B: Lokal öffnen**
+
 Öffne einfach die `feature-request.html` Datei in deinem Browser:
 
 ```bash
@@ -38,6 +46,8 @@ start feature-request.html
 
 # oder einfach per Doppelklick im Datei-Explorer
 ```
+
+⚠️ **Hinweis:** Für Mikrofon-Zugriff ist HTTPS oder localhost erforderlich. Bei lokaler Nutzung über `file://` funktioniert das Mikrofon nicht.
 
 ### 3. API-Key eingeben
 
@@ -110,6 +120,24 @@ start feature-request.html
 - API-Key wird im Browser-LocalStorage gespeichert
 - Keine Daten werden an externe Server gesendet (außer an die mittwald API)
 
+### ⚠️ WICHTIGE Sicherheitshinweise
+
+**NIEMALS den API-Key in gemeinsam genutzten Browsern speichern:**
+- ❌ Öffentliche Computer (Bibliotheken, Internet-Cafés, etc.)
+- ❌ Geteilte Arbeitsplätze
+- ❌ Familien-Computer oder gemeinsam genutzte Geräte
+- ❌ Jeder Computer, auf den andere Personen Zugriff haben
+
+**Warum?** localStorage ist für alle Benutzer des gleichen Browsers auf dem Gerät zugänglich. Andere Personen könnten deinen API-Key einsehen und missbrauchen.
+
+**Sicherheitsbest Practices:**
+- ✅ Nutze diese Seite nur auf deinem privaten, gesicherten Gerät
+- ✅ Lösche den API-Key nach jeder Nutzung mit dem "🗑️ Löschen" Button
+- ✅ Teile deinen API-Key niemals mit anderen
+- ✅ Bei Verlust oder Kompromittierung: Erstelle sofort einen neuen Key im mStudio
+- ✅ Überprüfe regelmäßig deine API-Key-Nutzung im mittwald mStudio
+- ✅ Nutze die Seite nur auf vertrauenswürdigen Websites (XSS-Schutz)
+
 ## Beispiel
 
 **Sprachnachricht:**
@@ -140,6 +168,11 @@ Die Seite ist eine reine HTML/CSS/JavaScript-Anwendung ohne externe Dependencies
 
 ## Links
 
+- 🌐 **Live-Version:** [GitHub Pages](https://maikbehring.github.io/feature-request-whisperundco/)
+- 📚 **GitHub Pages Setup:** Siehe [GITHUB_PAGES.md](GITHUB_PAGES.md)
+- 🔒 **API-Key Sicherheit:** Siehe [API_KEY_SECURITY.md](API_KEY_SECURITY.md)
+- 🔐 **API-Key mit GitHub Pages:** Siehe [GITHUB_PAGES_API_KEY.md](GITHUB_PAGES_API_KEY.md) - Spezielle Anleitung für sichere API-Key-Speicherung auf GitHub Pages
+- 🗄️ **API-Key Stores & Services:** Siehe [API_KEY_STORES.md](API_KEY_STORES.md) - Übersicht über verfügbare API-Key-Management-Services
 - [mittwald Feature Requests auf GitHub](https://github.com/mittwald/feature-requests)
 - [mittwald Roadmap](https://mitt.link/roadmap)
 - [mittwald Developer Portal](https://developer.mittwald.de/)

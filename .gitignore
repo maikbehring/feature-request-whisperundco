@@ -1,6 +1,9 @@
 # Dokumentation (wird nicht mit ins Repository genommen)
 docs/
 
+# Sicherheitsdokumentation
+SECURITY.md
+
 # macOS
 .DS_Store
 
