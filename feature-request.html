@@ -51,6 +51,7 @@
 
         .form-group {
             margin-bottom: 30px;
+            padding: 0 20px;
         }
 
         .form-group label {
@@ -95,8 +96,9 @@
         .voice-controls {
             display: flex;
             gap: 10px;
-            margin-top: 10px;
+            margin-top: 15px;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .voice-btn {
@@ -189,7 +191,9 @@
             display: flex;
             gap: 15px;
             margin-top: 40px;
+            padding: 0 20px;
             flex-wrap: wrap;
+            justify-content: center;
         }
 
         .btn {
@@ -202,6 +206,7 @@
             transition: all 0.3s ease;
             flex: 1;
             min-width: 200px;
+            max-width: 300px;
         }
 
         .btn.primary {
@@ -556,28 +561,30 @@
         </div>
 
         <div class="content">
-            <div class="form-group" style="margin-bottom: 30px; padding: 25px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 12px; border-left: 5px solid #4a90e2; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <div class="form-group" style="margin-bottom: 30px; padding: 25px 30px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 12px; border-left: 5px solid #4a90e2; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                 <label for="apiKey" style="font-size: 1.2em; margin-bottom: 15px; display: block;">
                     🔑 mittwald AI API-Key <span class="required">*</span>
                 </label>
-                <div style="position: relative; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <div style="position: relative; display: flex; gap: 10px; align-items: stretch; flex-wrap: wrap;">
                     <input type="password" id="apiKey" name="apiKey" required 
                            placeholder="Dein mittwald AI-Hosting API-Key hier eingeben..."
                            style="flex: 1; min-width: 250px; padding: 15px; border: 2px solid #4a90e2; border-radius: 8px; font-size: 1em; font-family: 'Courier New', monospace;">
-                    <button type="button" id="toggleApiKey" 
-                            style="padding: 15px 20px; background: #4a90e2; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1em; font-weight: 600; white-space: nowrap;"
-                            title="API-Key anzeigen/verstecken">
-                        👁️
-                    </button>
-                    <button type="button" id="clearApiKey" 
-                            style="padding: 15px 20px; background: #e74c3c; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1em; font-weight: 600; white-space: nowrap;"
-                            title="API-Key aus Browser-Cache löschen (nur für Demo)">
-                        🗑️ Löschen
-                    </button>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button type="button" id="toggleApiKey" 
+                                style="padding: 15px 20px; background: #4a90e2; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1em; font-weight: 600; white-space: nowrap;"
+                                title="API-Key anzeigen/verstecken">
+                            👁️
+                        </button>
+                        <button type="button" id="clearApiKey" 
+                                style="padding: 15px 20px; background: #e74c3c; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1em; font-weight: 600; white-space: nowrap;"
+                                title="API-Key aus Browser-Cache löschen (nur für Demo)">
+                            🗑️ Löschen
+                        </button>
+                    </div>
                 </div>
                 
                 <!-- CTA Section für AI-Hosting -->
-                <div class="cta-section" style="margin-top: 25px;">
+                <div class="cta-section" style="margin-top: 25px; margin-left: 20px; margin-right: 20px;">
                     <p>🚀 Noch keinen API-Key? Starte jetzt mit mittwald AI-Hosting</p>
                     <a href="https://www.mittwald.de/mstudio/ai-hosting" target="_blank" class="cta-button">
                         <span>✨ AI-Hosting Tarif wählen</span>
@@ -598,11 +605,11 @@
                               placeholder="System Prompt wird geladen..."></textarea>
                     <div class="system-prompt-actions">
                         <button type="button" id="saveSystemPrompt" 
-                                style="padding: 12px 24px; background: #9b59b6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1em;">
+                                style="padding: 12px 24px; background: #4a90e2; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1em;">
                             💾 System Prompt speichern
                         </button>
                         <button type="button" id="resetSystemPrompt" 
-                                style="padding: 12px 24px; background: #e74c3c; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1em;">
+                                style="padding: 12px 24px; background: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1em;">
                             🔄 Auf Standard zurücksetzen
                         </button>
                     </div>
@@ -628,7 +635,7 @@
                                 <span>🎤 Sprachaufnahme</span>
                             </button>
                             <button type="button" class="btn secondary" id="clearVoiceBtn" 
-                                    style="padding: 12px 20px; font-size: 0.9em; background: #e74c3c; color: white; border: none; border-radius: 25px; cursor: pointer; font-weight: 600;"
+                                    style="padding: 12px 20px; font-size: 0.9em; background: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;"
                                     title="Feld leeren">
                                 🗑️ Feld leeren
                             </button>
@@ -647,7 +654,7 @@
                 </div>
 
                 <!-- Structured fields that will be auto-filled by AI -->
-                <div id="structuredFields" style="display: none; margin-top: 30px; padding-top: 30px; border-top: 2px solid #e0e0e0;">
+                <div id="structuredFields" style="display: none; margin-top: 30px; padding: 0 20px; padding-top: 30px; border-top: 2px solid #e0e0e0;">
                     <div style="padding: 20px; background: #e8f5e9; border-radius: 10px; margin-bottom: 30px; border-left: 4px solid #4caf50;">
                         <h3 style="margin: 0 0 10px 0; color: #2e7d32;">✅ Felder automatisch erkannt!</h3>
                         <p style="margin: 0; color: #555;">Die folgenden Felder wurden aus deiner Sprachnachricht extrahiert. Du kannst sie bearbeiten oder direkt absenden.</p>
@@ -715,7 +722,7 @@
             </form>
 
             <!-- System Prompt Section (ganz unten) -->
-            <div class="system-prompt-section" style="margin-top: 40px;">
+            <div class="system-prompt-section" style="margin-top: 40px; padding: 0 20px;">
                 <div class="system-prompt-toggle" id="systemPromptToggle">
                     <h3>⚙️ System Prompt (AI-Konfiguration)</h3>
                     <span id="systemPromptToggleIcon">▼</span>
@@ -744,7 +751,7 @@
             </div>
 
             <!-- API Info Section (ganz unten) -->
-            <div style="margin-top: 30px;">
+            <div style="margin-top: 30px; padding: 0 20px;">
                 <div class="api-info-toggle" id="apiInfoToggle">
                     <h4>ℹ️ Sicherheit & Weitere Infos</h4>
                     <span id="apiInfoToggleIcon">▼</span>
@@ -770,7 +777,7 @@
             </div>
 
             <!-- Impressum -->
-            <div style="margin-top: 30px;">
+            <div style="margin-top: 30px; padding: 0 20px;">
                 <div class="impressum-toggle" id="impressumToggle">
                     <h4>📄 Impressum</h4>
                     <span id="impressumToggleIcon">▼</span>
