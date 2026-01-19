@@ -315,6 +315,129 @@
         .api-key-info a:hover {
             text-decoration: underline;
         }
+
+        .system-prompt-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            border-left: 5px solid #9b59b6;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .system-prompt-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 15px;
+            background: #9b59b6;
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .system-prompt-toggle:hover {
+            background: #8e44ad;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(155, 89, 182, 0.3);
+        }
+
+        .system-prompt-toggle h3 {
+            margin: 0;
+            font-size: 1.2em;
+        }
+
+        .system-prompt-content {
+            display: none;
+            margin-top: 15px;
+        }
+
+        .system-prompt-content.expanded {
+            display: block;
+        }
+
+        .system-prompt-textarea {
+            width: 100%;
+            min-height: 400px;
+            padding: 15px;
+            border: 2px solid #9b59b6;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .system-prompt-textarea:focus {
+            outline: none;
+            border-color: #8e44ad;
+            box-shadow: 0 0 0 3px rgba(155, 89, 182, 0.1);
+        }
+
+        .system-prompt-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .system-prompt-info {
+            background: #e8eaf6;
+            border-left: 4px solid #9b59b6;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 12px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 18px 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            white-space: nowrap;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        .cta-button:active {
+            transform: translateY(0);
+        }
+
+        .cta-section {
+            margin: 25px 0;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 12px;
+            border: 2px solid #667eea;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.15);
+        }
+
+        .cta-section p {
+            margin: 0 0 20px 0;
+            font-size: 1.1em;
+            color: #555;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
@@ -347,10 +470,17 @@
                         🗑️ Löschen
                     </button>
                 </div>
+                
+                <!-- CTA Section für AI-Hosting -->
+                <div class="cta-section" style="margin-top: 25px;">
+                    <p>🚀 Noch keinen API-Key? Starte jetzt mit mittwald AI-Hosting</p>
+                    <a href="https://www.mittwald.de/mstudio/ai-hosting" target="_blank" class="cta-button">
+                        <span>✨ AI-Hosting Tarif wählen</span>
+                        <span>→</span>
+                    </a>
+                </div>
+
                 <div class="api-key-info" style="margin-top: 12px; padding: 15px; background: #e8f5e9; border-left: 4px solid #4caf50; border-radius: 6px;">
-                    <div style="margin-bottom: 10px;">
-                        🔑 <strong>API-Key buchen:</strong> Du kannst ganz einfach einen API-Key für mittwald AI-Hosting buchen: <a href="https://www.mittwald.de/mstudio/ai-hosting" target="_blank" style="color: #1976d2; font-weight: 600;">Jetzt AI-Hosting Tarif wählen →</a>
-                    </div>
                     <div style="margin-bottom: 10px;">
                         🔒 <strong>Sicherheit:</strong> Dein API-Key wird nur lokal in deinem Browser gespeichert (localStorage) und niemals an Dritte weitergegeben. 
                     </div>
@@ -364,6 +494,34 @@
                             <li>Du kannst den API-Key jederzeit mit dem "🗑️ Löschen" Button entfernen</li>
                             <li>Alle Tarife sind monatlich kündbar, keine Mindestlaufzeit</li>
                         </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="system-prompt-section">
+                <div class="system-prompt-toggle" id="systemPromptToggle">
+                    <h3>⚙️ System Prompt (AI-Konfiguration)</h3>
+                    <span id="systemPromptToggleIcon">▼</span>
+                </div>
+                <div class="system-prompt-content" id="systemPromptContent">
+                    <label for="systemPrompt" style="display: block; margin-bottom: 10px; font-weight: 600; color: #555;">
+                        System Prompt für die Feature-Request-Analyse:
+                    </label>
+                    <textarea id="systemPrompt" class="system-prompt-textarea" 
+                              placeholder="System Prompt wird geladen..."></textarea>
+                    <div class="system-prompt-actions">
+                        <button type="button" id="saveSystemPrompt" 
+                                style="padding: 12px 24px; background: #9b59b6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1em;">
+                            💾 System Prompt speichern
+                        </button>
+                        <button type="button" id="resetSystemPrompt" 
+                                style="padding: 12px 24px; background: #e74c3c; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1em;">
+                            🔄 Auf Standard zurücksetzen
+                        </button>
+                    </div>
+                    <div class="system-prompt-info">
+                        <strong>ℹ️ Info:</strong> Der System Prompt steuert, wie die AI deine Feature-Requests analysiert und strukturiert. 
+                        Änderungen werden lokal in deinem Browser gespeichert und bei der nächsten Analyse verwendet.
                     </div>
                 </div>
             </div>
@@ -750,6 +908,69 @@ WICHTIG:
                 
                 // Show notification
                 showNotification('API-Key wurde aus dem Browser-Cache gelöscht', 'success');
+            }
+        });
+
+        // System Prompt Management
+        const SYSTEM_PROMPT_STORAGE_KEY = 'mittwald_feature_request_system_prompt';
+        const systemPromptTextarea = document.getElementById('systemPrompt');
+        const systemPromptToggle = document.getElementById('systemPromptToggle');
+        const systemPromptContent = document.getElementById('systemPromptContent');
+        const systemPromptToggleIcon = document.getElementById('systemPromptToggleIcon');
+        const saveSystemPromptBtn = document.getElementById('saveSystemPrompt');
+        const resetSystemPromptBtn = document.getElementById('resetSystemPrompt');
+
+        // Function to get current system prompt (from textarea > localStorage > default)
+        function getSystemPrompt() {
+            if (systemPromptTextarea && systemPromptTextarea.value.trim()) {
+                return systemPromptTextarea.value.trim();
+            }
+            
+            const savedPrompt = localStorage.getItem(SYSTEM_PROMPT_STORAGE_KEY);
+            if (savedPrompt) {
+                return savedPrompt;
+            }
+            
+            return FEATURE_REQUEST_SYSTEM_PROMPT;
+        }
+
+        // Load system prompt on page load
+        function loadSystemPrompt() {
+            const savedPrompt = localStorage.getItem(SYSTEM_PROMPT_STORAGE_KEY);
+            if (savedPrompt) {
+                systemPromptTextarea.value = savedPrompt;
+            } else {
+                systemPromptTextarea.value = FEATURE_REQUEST_SYSTEM_PROMPT;
+            }
+        }
+
+        // Initialize system prompt
+        loadSystemPrompt();
+
+        // Toggle system prompt section
+        systemPromptToggle.addEventListener('click', function() {
+            systemPromptContent.classList.toggle('expanded');
+            systemPromptToggleIcon.textContent = systemPromptContent.classList.contains('expanded') ? '▲' : '▼';
+        });
+
+        // Save system prompt
+        saveSystemPromptBtn.addEventListener('click', function() {
+            const prompt = systemPromptTextarea.value.trim();
+            if (!prompt) {
+                showNotification('System Prompt darf nicht leer sein', 'error');
+                return;
+            }
+            
+            localStorage.setItem(SYSTEM_PROMPT_STORAGE_KEY, prompt);
+            showNotification('System Prompt wurde gespeichert', 'success');
+        });
+
+        // Reset system prompt to default
+        resetSystemPromptBtn.addEventListener('click', function() {
+            if (confirm('Möchtest du den System Prompt wirklich auf den Standard zurücksetzen?\n\nAlle Änderungen gehen verloren.')) {
+                localStorage.removeItem(SYSTEM_PROMPT_STORAGE_KEY);
+                systemPromptTextarea.value = FEATURE_REQUEST_SYSTEM_PROMPT;
+                showNotification('System Prompt wurde auf Standard zurückgesetzt', 'success');
             }
         });
 
@@ -1302,7 +1523,7 @@ ${sanitizedText}
                     messages: [
                         {
                             role: 'system',
-                            content: FEATURE_REQUEST_SYSTEM_PROMPT
+                            content: getSystemPrompt()
                         },
                         {
                             role: 'user',
