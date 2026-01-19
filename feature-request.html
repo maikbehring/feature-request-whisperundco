@@ -438,6 +438,40 @@
             color: #555;
             font-weight: 500;
         }
+
+        .api-info-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 12px 15px;
+            background: #667eea;
+            color: white;
+            border-radius: 8px;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .api-info-toggle:hover {
+            background: #5568d3;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .api-info-toggle h4 {
+            margin: 0;
+            font-size: 1em;
+            font-weight: 600;
+        }
+
+        .api-info-content {
+            display: none;
+            margin-top: 12px;
+        }
+
+        .api-info-content.expanded {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -480,20 +514,26 @@
                     </a>
                 </div>
 
-                <div class="api-key-info" style="margin-top: 12px; padding: 15px; background: #e8f5e9; border-left: 4px solid #4caf50; border-radius: 6px;">
-                    <div style="margin-bottom: 10px;">
-                        🔒 <strong>Sicherheit:</strong> Dein API-Key wird nur lokal in deinem Browser gespeichert (localStorage) und niemals an Dritte weitergegeben. 
-                    </div>
-                    <div style="margin-bottom: 10px; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
-                        💡 <strong>Hinweis:</strong> Für beste Sicherheit solltest du diese Seite auf deinem privaten Gerät nutzen. Auf gemeinsam genutzten Computern kannst du den API-Key nach der Nutzung einfach mit dem "🗑️ Löschen" Button entfernen.
-                    </div>
-                    <div style="margin-bottom: 10px;">
-                        📖 <strong>Weitere Infos:</strong> 
-                        <ul style="margin-top: 8px; margin-left: 20px; padding-left: 10px;">
-                            <li><a href="https://developer.mittwald.de/de/docs/v2/platform/aihosting/access-and-usage/" target="_blank">API-Key im mStudio erstellen</a></li>
-                            <li>Du kannst den API-Key jederzeit mit dem "🗑️ Löschen" Button entfernen</li>
-                            <li>Alle Tarife sind monatlich kündbar, keine Mindestlaufzeit</li>
-                        </ul>
+                <div class="api-info-toggle" id="apiInfoToggle">
+                    <h4>ℹ️ Sicherheit & Weitere Infos</h4>
+                    <span id="apiInfoToggleIcon">▼</span>
+                </div>
+                <div class="api-info-content" id="apiInfoContent">
+                    <div class="api-key-info" style="padding: 15px; background: #e8f5e9; border-left: 4px solid #4caf50; border-radius: 6px;">
+                        <div style="margin-bottom: 10px;">
+                            🔒 <strong>Sicherheit:</strong> Dein API-Key wird nur lokal in deinem Browser gespeichert (localStorage) und niemals an Dritte weitergegeben. 
+                        </div>
+                        <div style="margin-bottom: 10px; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
+                            💡 <strong>Hinweis:</strong> Für beste Sicherheit solltest du diese Seite auf deinem privaten Gerät nutzen. Auf gemeinsam genutzten Computern kannst du den API-Key nach der Nutzung einfach mit dem "🗑️ Löschen" Button entfernen.
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            📖 <strong>Weitere Infos:</strong> 
+                            <ul style="margin-top: 8px; margin-left: 20px; padding-left: 10px;">
+                                <li><a href="https://developer.mittwald.de/de/docs/v2/platform/aihosting/access-and-usage/" target="_blank">API-Key im mStudio erstellen</a></li>
+                                <li>Du kannst den API-Key jederzeit mit dem "🗑️ Löschen" Button entfernen</li>
+                                <li>Alle Tarife sind monatlich kündbar, keine Mindestlaufzeit</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -910,6 +950,18 @@ WICHTIG:
                 showNotification('API-Key wurde aus dem Browser-Cache gelöscht', 'success');
             }
         });
+
+        // Toggle API Info Section
+        const apiInfoToggle = document.getElementById('apiInfoToggle');
+        const apiInfoContent = document.getElementById('apiInfoContent');
+        const apiInfoToggleIcon = document.getElementById('apiInfoToggleIcon');
+        
+        if (apiInfoToggle && apiInfoContent) {
+            apiInfoToggle.addEventListener('click', function() {
+                apiInfoContent.classList.toggle('expanded');
+                apiInfoToggleIcon.textContent = apiInfoContent.classList.contains('expanded') ? '▲' : '▼';
+            });
+        }
 
         // System Prompt Management
         const SYSTEM_PROMPT_STORAGE_KEY = 'mittwald_feature_request_system_prompt';
