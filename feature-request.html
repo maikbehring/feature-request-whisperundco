@@ -321,7 +321,7 @@
             padding: 25px;
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             border-radius: 12px;
-            border-left: 5px solid #9b59b6;
+            border-left: 5px solid #4a90e2;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
@@ -331,7 +331,7 @@
             justify-content: space-between;
             cursor: pointer;
             padding: 15px;
-            background: #9b59b6;
+            background: #4a90e2;
             color: white;
             border-radius: 8px;
             margin-bottom: 15px;
@@ -339,9 +339,9 @@
         }
 
         .system-prompt-toggle:hover {
-            background: #8e44ad;
+            background: #357abd;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(155, 89, 182, 0.3);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
         }
 
         .system-prompt-toggle h3 {
@@ -362,7 +362,7 @@
             width: 100%;
             min-height: 400px;
             padding: 15px;
-            border: 2px solid #9b59b6;
+            border: 2px solid #4a90e2;
             border-radius: 8px;
             font-size: 0.9em;
             font-family: 'Courier New', monospace;
@@ -372,8 +372,8 @@
 
         .system-prompt-textarea:focus {
             outline: none;
-            border-color: #8e44ad;
-            box-shadow: 0 0 0 3px rgba(155, 89, 182, 0.1);
+            border-color: #357abd;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
         }
 
         .system-prompt-actions {
@@ -384,8 +384,8 @@
         }
 
         .system-prompt-info {
-            background: #e8eaf6;
-            border-left: 4px solid #9b59b6;
+            background: #e8f4f8;
+            border-left: 4px solid #4a90e2;
             padding: 12px;
             border-radius: 6px;
             margin-top: 12px;
@@ -399,7 +399,7 @@
             justify-content: center;
             gap: 10px;
             padding: 18px 32px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #4a90e2;
             color: white;
             text-decoration: none;
             border-radius: 12px;
@@ -408,14 +408,14 @@
             border: none;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
             white-space: nowrap;
         }
 
         .cta-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
-            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            box-shadow: 0 8px 25px rgba(74, 144, 226, 0.4);
+            background: #357abd;
         }
 
         .cta-button:active {
@@ -445,7 +445,7 @@
             justify-content: space-between;
             cursor: pointer;
             padding: 12px 15px;
-            background: #667eea;
+            background: #4a90e2;
             color: white;
             border-radius: 8px;
             margin-top: 15px;
@@ -453,9 +453,9 @@
         }
 
         .api-info-toggle:hover {
-            background: #5568d3;
+            background: #357abd;
             transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
         }
 
         .api-info-toggle h4 {
@@ -471,6 +471,42 @@
 
         .api-info-content.expanded {
             display: block;
+        }
+
+        .impressum {
+            margin-top: 60px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-top: 2px solid #e0e0e0;
+            border-radius: 0 0 20px 20px;
+            font-size: 0.85em;
+            color: #666;
+            line-height: 1.8;
+        }
+
+        .impressum h3 {
+            color: #333;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .impressum p {
+            margin: 8px 0;
+        }
+
+        .impressum strong {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .impressum a {
+            color: #4a90e2;
+            text-decoration: none;
+        }
+
+        .impressum a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -514,31 +550,7 @@
                     </a>
                 </div>
 
-                <div class="api-info-toggle" id="apiInfoToggle">
-                    <h4>ℹ️ Sicherheit & Weitere Infos</h4>
-                    <span id="apiInfoToggleIcon">▼</span>
-                </div>
-                <div class="api-info-content" id="apiInfoContent">
-                    <div class="api-key-info" style="padding: 15px; background: #e8f5e9; border-left: 4px solid #4caf50; border-radius: 6px;">
-                        <div style="margin-bottom: 10px;">
-                            🔒 <strong>Sicherheit:</strong> Dein API-Key wird nur lokal in deinem Browser gespeichert (localStorage) und niemals an Dritte weitergegeben. 
-                        </div>
-                        <div style="margin-bottom: 10px; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
-                            💡 <strong>Hinweis:</strong> Für beste Sicherheit solltest du diese Seite auf deinem privaten Gerät nutzen. Auf gemeinsam genutzten Computern kannst du den API-Key nach der Nutzung einfach mit dem "🗑️ Löschen" Button entfernen.
-                        </div>
-                        <div style="margin-bottom: 10px;">
-                            📖 <strong>Weitere Infos:</strong> 
-                            <ul style="margin-top: 8px; margin-left: 20px; padding-left: 10px;">
-                                <li><a href="https://developer.mittwald.de/de/docs/v2/platform/aihosting/access-and-usage/" target="_blank">API-Key im mStudio erstellen</a></li>
-                                <li>Du kannst den API-Key jederzeit mit dem "🗑️ Löschen" Button entfernen</li>
-                                <li>Alle Tarife sind monatlich kündbar, keine Mindestlaufzeit</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
             </div>
-
-            <div class="system-prompt-section">
                 <div class="system-prompt-toggle" id="systemPromptToggle">
                     <h3>⚙️ System Prompt (AI-Konfiguration)</h3>
                     <span id="systemPromptToggleIcon">▼</span>
@@ -666,6 +678,96 @@
                     </button>
                 </div>
             </form>
+
+            <!-- System Prompt Section (ganz unten) -->
+            <div class="system-prompt-section" style="margin-top: 40px;">
+                <div class="system-prompt-toggle" id="systemPromptToggle">
+                    <h3>⚙️ System Prompt (AI-Konfiguration)</h3>
+                    <span id="systemPromptToggleIcon">▼</span>
+                </div>
+                <div class="system-prompt-content" id="systemPromptContent">
+                    <label for="systemPrompt" style="display: block; margin-bottom: 10px; font-weight: 600; color: #555;">
+                        System Prompt für die Feature-Request-Analyse:
+                    </label>
+                    <textarea id="systemPrompt" class="system-prompt-textarea" 
+                              placeholder="System Prompt wird geladen..."></textarea>
+                    <div class="system-prompt-actions">
+                        <button type="button" id="saveSystemPrompt" 
+                                style="padding: 12px 24px; background: #4a90e2; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1em;">
+                            💾 System Prompt speichern
+                        </button>
+                        <button type="button" id="resetSystemPrompt" 
+                                style="padding: 12px 24px; background: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1em;">
+                            🔄 Auf Standard zurücksetzen
+                        </button>
+                    </div>
+                    <div class="system-prompt-info">
+                        <strong>ℹ️ Info:</strong> Der System Prompt steuert, wie die AI deine Feature-Requests analysiert und strukturiert. 
+                        Änderungen werden lokal in deinem Browser gespeichert und bei der nächsten Analyse verwendet.
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Info Section (ganz unten) -->
+            <div style="margin-top: 30px;">
+                <div class="api-info-toggle" id="apiInfoToggle">
+                    <h4>ℹ️ Sicherheit & Weitere Infos</h4>
+                    <span id="apiInfoToggleIcon">▼</span>
+                </div>
+                <div class="api-info-content" id="apiInfoContent">
+                    <div class="api-key-info" style="padding: 15px; background: #f8f9fa; border-left: 4px solid #4a90e2; border-radius: 6px;">
+                        <div style="margin-bottom: 10px;">
+                            🔒 <strong>Sicherheit:</strong> Dein API-Key wird nur lokal in deinem Browser gespeichert (localStorage) und niemals an Dritte weitergegeben. 
+                        </div>
+                        <div style="margin-bottom: 10px; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
+                            💡 <strong>Hinweis:</strong> Für beste Sicherheit solltest du diese Seite auf deinem privaten Gerät nutzen. Auf gemeinsam genutzten Computern kannst du den API-Key nach der Nutzung einfach mit dem "🗑️ Löschen" Button entfernen.
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            📖 <strong>Weitere Infos:</strong> 
+                            <ul style="margin-top: 8px; margin-left: 20px; padding-left: 10px;">
+                                <li><a href="https://developer.mittwald.de/de/docs/v2/platform/aihosting/access-and-usage/" target="_blank">API-Key im mStudio erstellen</a></li>
+                                <li>Du kannst den API-Key jederzeit mit dem "🗑️ Löschen" Button entfernen</li>
+                                <li>Alle Tarife sind monatlich kündbar, keine Mindestlaufzeit</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Impressum -->
+            <div class="impressum">
+                <h3>Impressum</h3>
+                <p>Diese Webseite wird von der <strong>Mittwald CM Service GmbH & Co. KG</strong> betrieben. Alle Rechte vorbehalten. Alle auf der Webseite genannten Informationen und Bilder sind Eigentum der Mittwald CM Service GmbH & Co. KG.</p>
+                
+                <p><strong>Mittwald CM Service GmbH & Co. KG</strong><br>
+                Königsberger Straße 4-6<br>
+                32339 Espelkamp</p>
+                
+                <p>
+                    Telefon: <a href="tel:+495772293100">+49-5772-293-100</a><br>
+                    Telefax: +49-5772-293-333
+                </p>
+                
+                <p>
+                    HRA: 6640, AG Bad Oeynhausen<br>
+                    USt. ID-Nr: DE814773217
+                </p>
+                
+                <p>
+                    Komplementärin: Robert Meyer Verwaltungs GmbH, AG Bad Oeynhausen HRB 13260<br>
+                    vertreten durch die Geschäftsführer: Robert Meyer, Florian Jürgens
+                </p>
+                
+                <p>
+                    Verantwortlich für den Inhalt nach § 18 Abs. 2 Medienstaatsvertrag (MStV):<br>
+                    Robert Meyer, Florian Jürgens (Anschrift s. o.)
+                </p>
+                
+                <p>
+                    <strong>Verantwortlicher Produktmanager:</strong> Maik Behring<br>
+                    Es handelt sich um eine Testseite zur Veranschaulichung von Funktion des mittwald AI Hostings.
+                </p>
+            </div>
         </div>
     </div>
 
