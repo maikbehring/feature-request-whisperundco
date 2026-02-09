@@ -7,6 +7,7 @@ SECURITY.md
 # Markdown-Dokumentationsdateien
 *.md
 !README.md
+!system-prompts.md
 
 # macOS
 .DS_Store

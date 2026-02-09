@@ -811,8 +811,8 @@
         const CHAT_API_URL = 'https://llm.aihosting.mittwald.de/v1/chat/completions';
         const CHAT_MODEL = 'Mistral-Small-3.2-24B-Instruct'; // For structuring the feature request (exact case from API)
 
-        // Systemprompt für Feature-Request-Analyse bei mittwald
-        const FEATURE_REQUEST_SYSTEM_PROMPT = `Du bist ein strukturierender Analyse-Assistent für mittwald, einen Hosting-Dienstleister für Webagenturen, Digitalagenturen und Freelancer.
+        // Systemprompt für Feature-Request-Analyse bei mittwald (Fallback, falls Markdown-Datei nicht geladen werden kann)
+        let FEATURE_REQUEST_SYSTEM_PROMPT = `Du bist ein strukturierender Analyse-Assistent für mittwald, einen Hosting-Dienstleister für Webagenturen, Digitalagenturen und Freelancer.
 Kund:innen reichen Feature Requests ein – oft unscharf formuliert, aus Agentur-Perspektive oder im Namen von Endkund:innen.
 
 Deine Aufgabe ist es, aus einem freien Text (oder Sprachtranskript) strukturierte Feature-Request-Daten zu extrahieren.
@@ -1118,12 +1118,40 @@ WICHTIG:
 
         // System Prompt Management
         const SYSTEM_PROMPT_STORAGE_KEY = 'mittwald_feature_request_system_prompt';
+        const SYSTEM_PROMPT_FILE = 'system-prompts.md';
         const systemPromptTextarea = document.getElementById('systemPrompt');
         const systemPromptToggle = document.getElementById('systemPromptToggle');
         const systemPromptContent = document.getElementById('systemPromptContent');
         const systemPromptToggleIcon = document.getElementById('systemPromptToggleIcon');
         const saveSystemPromptBtn = document.getElementById('saveSystemPrompt');
         const resetSystemPromptBtn = document.getElementById('resetSystemPrompt');
+
+        // Load system prompt from Markdown file
+        async function loadSystemPromptFromFile() {
+            try {
+                const response = await fetch(SYSTEM_PROMPT_FILE);
+                if (!response.ok) {
+                    throw new Error(`Failed to load ${SYSTEM_PROMPT_FILE}: ${response.status}`);
+                }
+                const markdownContent = await response.text();
+                
+                // Extract prompt content after "## Feature Request System Prompt" header
+                const headerMatch = markdownContent.match(/## Feature Request System Prompt\s*\n(.*)/s);
+                if (headerMatch && headerMatch[1]) {
+                    const promptContent = headerMatch[1].trim();
+                    FEATURE_REQUEST_SYSTEM_PROMPT = promptContent;
+                    return promptContent;
+                } else {
+                    // Fallback: use entire content if header not found
+                    console.warn('Header not found in system-prompts.md, using entire content');
+                    FEATURE_REQUEST_SYSTEM_PROMPT = markdownContent.trim();
+                    return markdownContent.trim();
+                }
+            } catch (error) {
+                console.warn('Failed to load system prompt from file, using fallback:', error);
+                return null; // Will use fallback prompt
+            }
+        }
 
         // Function to get current system prompt (from textarea > localStorage > default)
         function getSystemPrompt() {
@@ -1140,16 +1168,20 @@ WICHTIG:
         }
 
         // Load system prompt on page load
-        function loadSystemPrompt() {
+        async function loadSystemPrompt() {
+            // Try to load from file first
+            const filePrompt = await loadSystemPromptFromFile();
+            
             const savedPrompt = localStorage.getItem(SYSTEM_PROMPT_STORAGE_KEY);
             if (savedPrompt) {
                 systemPromptTextarea.value = savedPrompt;
             } else {
-                systemPromptTextarea.value = FEATURE_REQUEST_SYSTEM_PROMPT;
+                // Use file prompt if loaded, otherwise use fallback
+                systemPromptTextarea.value = filePrompt || FEATURE_REQUEST_SYSTEM_PROMPT;
             }
         }
 
-        // Initialize system prompt
+        // Initialize system prompt (async)
         loadSystemPrompt();
 
         // Toggle system prompt section
@@ -1171,10 +1203,12 @@ WICHTIG:
         });
 
         // Reset system prompt to default
-        resetSystemPromptBtn.addEventListener('click', function() {
+        resetSystemPromptBtn.addEventListener('click', async function() {
             if (confirm('Möchtest du den System Prompt wirklich auf den Standard zurücksetzen?\n\nAlle Änderungen gehen verloren.')) {
                 localStorage.removeItem(SYSTEM_PROMPT_STORAGE_KEY);
-                systemPromptTextarea.value = FEATURE_REQUEST_SYSTEM_PROMPT;
+                // Reload from file to ensure we have the latest version
+                const filePrompt = await loadSystemPromptFromFile();
+                systemPromptTextarea.value = filePrompt || FEATURE_REQUEST_SYSTEM_PROMPT;
                 showNotification('System Prompt wurde auf Standard zurückgesetzt', 'success');
             }
         });
