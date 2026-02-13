@@ -1195,6 +1195,8 @@ Qualitätsanforderungen:
 - Keine zusätzlichen Erklärungen außerhalb der vier Felder
 - KEINE Markdown-Formatierung im JSON verwenden (kein **, kein *, keine Code-Blöcke innerhalb der JSON-Werte)
 - Reines, gültiges JSON ohne Markdown-Syntax
+- Anführungszeichen innerhalb von JSON-Strings MÜSSEN escaped werden: "text \"mit Anführungszeichen\"" nicht "text "mit Anführungszeichen""
+- Verwende KEINE einfachen Anführungszeichen (') für JSON-Strings, nur doppelte Anführungszeichen (")
 
 Antworte IMMER NUR mit einem gültigen JSON-Objekt im folgenden Format: {"title": "...", "problem": "...", "solution": "...", "additional": "..."}. 
 
@@ -1204,6 +1206,7 @@ WICHTIG:
 - Verwende KEINE Markdown-Formatierung (kein **bold**, kein *italic*, kein code) innerhalb der JSON-Werte
 - Verwende KEINE Markdown-Formatierung im JSON-Objekt selbst
 - Nur reines, gültiges JSON ohne Markdown-Syntax
+- Escape alle Anführungszeichen innerhalb von JSON-Strings mit \\" (z.B. "text \\"mit Anführungszeichen\\"")
 - Verwende den vollständigen Text für die Extraktion
 - Keine zusätzlichen Erklärungen, nur JSON`;
 
@@ -2065,9 +2068,19 @@ ${sanitizedText}
                     
                     // Remove markdown code blocks if present
                     if (jsonString.includes('```')) {
+                        // Try to match JSON block more flexibly
                         const jsonMatch = jsonString.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
                         if (jsonMatch && jsonMatch[1]) {
                             jsonString = jsonMatch[1];
+                        } else {
+                            // Try to extract JSON between ``` markers more aggressively
+                            const startMarker = jsonString.indexOf('```');
+                            const endMarker = jsonString.lastIndexOf('```');
+                            if (startMarker !== -1 && endMarker !== -1 && endMarker > startMarker) {
+                                const extracted = jsonString.substring(startMarker + 3, endMarker).trim();
+                                // Remove "json" label if present
+                                jsonString = extracted.replace(/^json\s*/i, '').trim();
+                            }
                         }
                     }
                     
@@ -2078,6 +2091,11 @@ ${sanitizedText}
                             jsonString = jsonMatch[1];
                         }
                     }
+                    
+                    // Replace single quotes with double quotes in JSON (but be careful not to break escaped quotes)
+                    // Only replace single quotes that appear to be string delimiters, not content
+                    // Pattern: 'text' -> "text" but only if it looks like a JSON string delimiter
+                    jsonString = jsonString.replace(/([{,]\s*)'([^']*)'(\s*[:,\]}])/g, '$1"$2"$3');
                     
                     // Remove Markdown formatting from JSON string values first
                     // This handles cases where AI returns **bold** or other markdown in JSON
@@ -2098,11 +2116,12 @@ ${sanitizedText}
                             .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
                     }
                     
-                    // Fix unescaped newlines in JSON string values using a state machine approach
+                    // Fix unescaped newlines and quotes in JSON string values using a state machine approach
                     // This handles multi-line strings correctly by tracking when we're inside a string
                     let result = '';
                     let inString = false;
                     let escapeNext = false;
+                    
                     for (let i = 0; i < jsonString.length; i++) {
                         const char = jsonString[i];
                         
@@ -2121,9 +2140,57 @@ ${sanitizedText}
                         }
                         
                         if (char === '"') {
-                            // Quote - toggle string state (unless it's escaped, which we already handled)
-                            inString = !inString;
-                            result += char;
+                            if (inString) {
+                                // We're inside a string - check if this is a closing quote or an unescaped quote inside
+                                // Look ahead to find the next non-whitespace character
+                                let j = i + 1;
+                                while (j < jsonString.length && /\s/.test(jsonString[j])) {
+                                    j++;
+                                }
+                                const nextChar = j < jsonString.length ? jsonString[j] : null;
+                                
+                                // If next char is : , } ] or end of string, this is likely a closing quote
+                                // But we need to be careful - if there's text after it that doesn't match JSON structure,
+                                // it's probably an unescaped quote inside the string
+                                if (nextChar === ':' || nextChar === ',' || nextChar === '}' || nextChar === ']' || nextChar === null) {
+                                    // Check if there's content between this quote and the next structural element
+                                    // If there's text that looks like it's part of the string, escape this quote
+                                    let hasContentAfter = false;
+                                    for (let k = i + 1; k < j && k < jsonString.length; k++) {
+                                        if (!/\s/.test(jsonString[k])) {
+                                            hasContentAfter = true;
+                                            break;
+                                        }
+                                    }
+                                    
+                                    // Also check if there's text before this quote that suggests it's part of content
+                                    let k = i - 1;
+                                    while (k >= 0 && /\s/.test(jsonString[k])) {
+                                        k--;
+                                    }
+                                    const prevChar = k >= 0 ? jsonString[k] : null;
+                                    
+                                    // If previous char is a letter/number and next char suggests end of value, escape
+                                    if (prevChar && /[a-zA-Z0-9]/.test(prevChar) && (nextChar === ',' || nextChar === '}' || nextChar === ']')) {
+                                        // This looks like an unescaped quote inside content
+                                        result += '\\"';
+                                    } else if (hasContentAfter && nextChar && nextChar !== ':' && nextChar !== ',' && nextChar !== '}' && nextChar !== ']') {
+                                        // There's content after, and it's not a structural char - escape
+                                        result += '\\"';
+                                    } else {
+                                        // This is a closing quote
+                                        inString = false;
+                                        result += char;
+                                    }
+                                } else {
+                                    // Next char is not a structural element - this is an unescaped quote inside string
+                                    result += '\\"';
+                                }
+                            } else {
+                                // Starting a new string
+                                inString = true;
+                                result += char;
+                            }
                             continue;
                         }
                         
@@ -2186,11 +2253,53 @@ ${sanitizedText}
                             const errorPos = secondError.message.match(/position (\d+)/);
                             if (errorPos) {
                                 const pos = parseInt(errorPos[1]);
-                                const start = Math.max(0, pos - 50);
-                                const end = Math.min(jsonString.length, pos + 50);
+                                const start = Math.max(0, pos - 100);
+                                const end = Math.min(jsonString.length, pos + 100);
                                 console.error('JSON around error position:', jsonString.substring(start, end));
+                                
+                                // Try to fix unescaped quotes at the error position
+                                // Look for pattern like: "text "quotes" text" and escape the inner quotes
+                                const errorContext = jsonString.substring(Math.max(0, pos - 200), Math.min(jsonString.length, pos + 200));
+                                
+                                // Try to find and fix unescaped quotes in string values
+                                // Pattern: "value": "text "quoted" text"
+                                const quoteFixPattern = /("(?:[^"\\]|\\.)*)"([^",}\]]+)"((?:[^"\\]|\\.)*")/g;
+                                let fixedJson = jsonString;
+                                let match;
+                                let fixed = false;
+                                
+                                // Try to fix quotes around the error position
+                                const errorStart = Math.max(0, pos - 500);
+                                const errorEnd = Math.min(jsonString.length, pos + 500);
+                                const errorSection = jsonString.substring(errorStart, errorEnd);
+                                
+                                // Find strings with unescaped quotes and escape them
+                                // Look for: "text "inner" text" pattern
+                                const unescapedQuotePattern = /("(?:[^"\\]|\\.)*?)([^"\\])"([^",}\]]+?)"((?:[^"\\]|\\.)*?")/g;
+                                fixedJson = jsonString.replace(unescapedQuotePattern, (match, before, charBefore, middle, after) => {
+                                    // Check if this looks like an unescaped quote inside a string
+                                    if (charBefore !== '\\' && charBefore !== '"') {
+                                        fixed = true;
+                                        return before + charBefore + '\\"' + middle + '\\"' + after;
+                                    }
+                                    return match;
+                                });
+                                
+                                if (fixed) {
+                                    console.log('Attempting third parse with quote fixes...');
+                                    try {
+                                        structuredData = JSON.parse(fixedJson);
+                                        jsonString = fixedJson; // Use fixed version
+                                    } catch (thirdError) {
+                                        console.error('Third parse attempt also failed:', thirdError);
+                                    }
+                                }
                             }
-                            throw new Error('AI konnte die Daten nicht korrekt strukturieren. Versuche es erneut oder formuliere deinen Request anders. Fehler: ' + secondError.message);
+                            
+                            // If still not parsed, throw error
+                            if (!structuredData) {
+                                throw new Error('AI konnte die Daten nicht korrekt strukturieren. Versuche es erneut oder formuliere deinen Request anders. Fehler: ' + secondError.message);
+                            }
                         }
                     }
                     
