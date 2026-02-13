@@ -81,6 +81,10 @@
             transition: all 0.3s ease;
         }
 
+        input[type="text"] {
+            min-height: 60px;
+        }
+
         input[type="text"]:focus,
         textarea:focus {
             outline: none;
@@ -89,7 +93,7 @@
         }
 
         textarea {
-            min-height: 200px;
+            min-height: 500px;
             resize: vertical;
         }
 
@@ -545,6 +549,137 @@
             margin-top: 0;
         }
 
+        /* Model Settings Styles */
+        .model-settings-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            border-left: 5px solid #4a90e2;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .model-settings-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 15px;
+            background: #4a90e2;
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .model-settings-toggle:hover {
+            background: #357abd;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        }
+
+        .model-settings-toggle h3 {
+            margin: 0;
+            font-size: 1.2em;
+        }
+
+        .model-settings-content {
+            display: none;
+            margin-top: 15px;
+        }
+
+        .model-settings-content.expanded {
+            display: block;
+        }
+
+        .temperature-control {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .temperature-control label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #555;
+            font-size: 1em;
+        }
+
+        .temperature-control .model-name {
+            color: #4a90e2;
+            font-weight: 700;
+        }
+
+        .temperature-slider-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .temperature-slider {
+            flex: 1;
+            height: 8px;
+            border-radius: 5px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .temperature-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4a90e2;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .temperature-slider::-webkit-slider-thumb:hover {
+            background: #357abd;
+            transform: scale(1.1);
+        }
+
+        .temperature-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4a90e2;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .temperature-slider::-moz-range-thumb:hover {
+            background: #357abd;
+            transform: scale(1.1);
+        }
+
+        .temperature-value {
+            min-width: 60px;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 600;
+            color: #4a90e2;
+            font-size: 1em;
+        }
+
+        .temperature-info {
+            margin-top: 8px;
+            font-size: 0.85em;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
         .impressum-content.expanded {
             display: block;
         }
@@ -601,7 +736,7 @@
                     <div class="input-wrapper">
                         <textarea id="voiceInput" name="voiceInput" required 
                                   placeholder="Sprich alles in einer Nachricht: Titel, Problem, Lösungsideen, zusätzliche Infos... Oder tippe hier dein Feature-Request...&#10;&#10;Beispiel: &quot;Ich möchte, dass die Projektsuche auch nach Domains funktioniert. Als Entwickler muss ich immer durch alle Projekte klicken, um eine spezifische Domain zu finden. Die Lösung könnte sein, dass die Projektsuche auch Domain-Suche unterstützt.&quot;"
-                                  style="min-height: 300px;"></textarea>
+                                  style="min-height: 800px;"></textarea>
                         <div class="voice-controls">
                             <button type="button" class="voice-btn record" id="recordVoice" data-target="voiceInput">
                                 <span class="status-indicator idle" id="voiceStatus"></span>
@@ -647,20 +782,20 @@
                             Problem <span class="required">*</span>
                         </label>
                         <textarea id="problem" name="problem" readonly 
-                                  style="background: #f8f9fa; cursor: not-allowed; min-height: 180px; border: 2px solid #e0e0e0;"></textarea>
+                                  style="background: #f8f9fa; cursor: not-allowed; min-height: 500px; border: 2px solid #e0e0e0;"></textarea>
                     </div>
 
                     <div class="form-group">
                         <label for="solution">Lösungsideen</label>
                         <textarea id="solution" name="solution" readonly 
-                                  style="background: #f8f9fa; cursor: not-allowed; min-height: 180px; border: 2px solid #e0e0e0;"></textarea>
+                                  style="background: #f8f9fa; cursor: not-allowed; min-height: 500px; border: 2px solid #e0e0e0;"></textarea>
                         <div class="help-text" style="margin-top: 5px;">Optional - kann leer bleiben</div>
                     </div>
 
                     <div class="form-group">
                         <label for="additional">Zusätzliche Informationen</label>
                         <textarea id="additional" name="additional" readonly 
-                                  style="background: #f8f9fa; cursor: not-allowed; min-height: 150px; border: 2px solid #e0e0e0;"></textarea>
+                                  style="background: #f8f9fa; cursor: not-allowed; min-height: 400px; border: 2px solid #e0e0e0;"></textarea>
                         <div class="help-text" style="margin-top: 5px;">Optional - kann leer bleiben</div>
                     </div>
 
@@ -720,6 +855,60 @@
                     <div class="system-prompt-info">
                         <strong>ℹ️ Info:</strong> Der System Prompt steuert, wie die AI deine Feature-Requests analysiert und strukturiert. 
                         Änderungen werden lokal in deinem Browser gespeichert und bei der nächsten Analyse verwendet.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Model Settings Section -->
+            <div class="model-settings-section" style="margin-top: 40px; padding: 0 20px;">
+                <div class="model-settings-toggle" id="modelSettingsToggle">
+                    <h3>🌡️ Modelleinstellungen (Temperatur)</h3>
+                    <span id="modelSettingsToggleIcon">▼</span>
+                </div>
+                <div class="model-settings-content" id="modelSettingsContent">
+                    <div class="temperature-control">
+                        <label>
+                            <span class="model-name">Whisper (Speech-to-Text)</span> - Temperatur
+                        </label>
+                        <div class="temperature-slider-wrapper">
+                            <input type="range" 
+                                   id="whisperTemperature" 
+                                   class="temperature-slider" 
+                                   min="0" 
+                                   max="2" 
+                                   step="0.1" 
+                                   value="1.0">
+                            <span class="temperature-value" id="whisperTemperatureValue">1.0</span>
+                        </div>
+                        <div class="temperature-info">
+                            Niedrigere Werte (0.0-0.5): Konservativer, präziser<br>
+                            Mittlere Werte (0.5-1.0): Ausgewogen<br>
+                            Höhere Werte (1.0-2.0): Kreativer, variabler
+                        </div>
+                    </div>
+                    <div class="temperature-control">
+                        <label>
+                            <span class="model-name">Chat-Modell (Feature-Request-Analyse)</span> - Temperatur
+                        </label>
+                        <div class="temperature-slider-wrapper">
+                            <input type="range" 
+                                   id="chatTemperature" 
+                                   class="temperature-slider" 
+                                   min="0" 
+                                   max="2" 
+                                   step="0.1" 
+                                   value="0.7">
+                            <span class="temperature-value" id="chatTemperatureValue">0.7</span>
+                        </div>
+                        <div class="temperature-info">
+                            Niedrigere Werte (0.0-0.5): Strukturierter, konsistenter<br>
+                            Mittlere Werte (0.5-1.0): Ausgewogen zwischen Struktur und Flexibilität<br>
+                            Höhere Werte (1.0-2.0): Kreativer, aber weniger vorhersagbar
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px; padding: 12px; background: #e8f4f8; border-left: 4px solid #4a90e2; border-radius: 6px; font-size: 0.9em; color: #555;">
+                        <strong>ℹ️ Info:</strong> Die Temperatur steuert die Kreativität und Variabilität der Modelle. 
+                        Änderungen werden automatisch gespeichert und bei der nächsten Verwendung verwendet.
                     </div>
                 </div>
             </div>
@@ -1102,6 +1291,78 @@ WICHTIG:
                 apiInfoContent.classList.toggle('expanded');
                 apiInfoToggleIcon.textContent = apiInfoContent.classList.contains('expanded') ? '▲' : '▼';
             });
+        }
+
+        // Toggle Model Settings Section
+        const modelSettingsToggle = document.getElementById('modelSettingsToggle');
+        const modelSettingsContent = document.getElementById('modelSettingsContent');
+        const modelSettingsToggleIcon = document.getElementById('modelSettingsToggleIcon');
+        
+        if (modelSettingsToggle && modelSettingsContent) {
+            modelSettingsToggle.addEventListener('click', function() {
+                modelSettingsContent.classList.toggle('expanded');
+                modelSettingsToggleIcon.textContent = modelSettingsContent.classList.contains('expanded') ? '▲' : '▼';
+            });
+        }
+
+        // Load temperature values from localStorage
+        function loadTemperatureSettings() {
+            const whisperTemp = localStorage.getItem('whisper_temperature') || '1.0';
+            const chatTemp = localStorage.getItem('chat_temperature') || '0.7';
+            
+            const whisperSlider = document.getElementById('whisperTemperature');
+            const chatSlider = document.getElementById('chatTemperature');
+            const whisperValue = document.getElementById('whisperTemperatureValue');
+            const chatValue = document.getElementById('chatTemperatureValue');
+            
+            if (whisperSlider && whisperValue) {
+                whisperSlider.value = whisperTemp;
+                whisperValue.textContent = whisperTemp;
+            }
+            
+            if (chatSlider && chatValue) {
+                chatSlider.value = chatTemp;
+                chatValue.textContent = chatTemp;
+            }
+        }
+
+        // Save temperature values to localStorage
+        function saveTemperatureSettings(model, value) {
+            localStorage.setItem(`${model}_temperature`, value);
+        }
+
+        // Initialize temperature sliders
+        loadTemperatureSettings();
+
+        // Whisper temperature slider
+        const whisperTempSlider = document.getElementById('whisperTemperature');
+        const whisperTempValue = document.getElementById('whisperTemperatureValue');
+        if (whisperTempSlider && whisperTempValue) {
+            whisperTempSlider.addEventListener('input', function() {
+                const value = parseFloat(this.value).toFixed(1);
+                whisperTempValue.textContent = value;
+                saveTemperatureSettings('whisper', value);
+            });
+        }
+
+        // Chat temperature slider
+        const chatTempSlider = document.getElementById('chatTemperature');
+        const chatTempValue = document.getElementById('chatTemperatureValue');
+        if (chatTempSlider && chatTempValue) {
+            chatTempSlider.addEventListener('input', function() {
+                const value = parseFloat(this.value).toFixed(1);
+                chatTempValue.textContent = value;
+                saveTemperatureSettings('chat', value);
+            });
+        }
+
+        // Get temperature values
+        function getWhisperTemperature() {
+            return parseFloat(localStorage.getItem('whisper_temperature') || '1.0');
+        }
+
+        function getChatTemperature() {
+            return parseFloat(localStorage.getItem('chat_temperature') || '0.7');
         }
 
         // Toggle Impressum Section
@@ -1501,7 +1762,7 @@ WICHTIG:
                 formData.append('file', wavBlob, fileName);
                 formData.append('model', WHISPER_MODEL);
                 formData.append('language', 'de');
-                formData.append('temperature', '1.0');
+                formData.append('temperature', getWhisperTemperature().toString());
                 formData.append('response_format', 'json');
 
                 // Send to Whisper API
@@ -1769,7 +2030,7 @@ ${sanitizedText}
                             content: prompt
                         }
                     ],
-                    temperature: 0.7,
+                    temperature: getChatTemperature(),
                     max_tokens: 2000 // Genug Platz für vollständige Extraktion
                 };
 
